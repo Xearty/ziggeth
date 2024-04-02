@@ -3,6 +3,7 @@ const assert = std.debug.assert;
 
 pub const Opcode = enum(u8) {
     PUSH1 = 0x60,
+    ADD = 0x01,
 };
 
 pub fn fromByte(byte: u8) Opcode {
