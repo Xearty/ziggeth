@@ -1,11 +1,12 @@
-
 const std = @import("std");
 const Allocator = std.mem.Allocator;
-const Stack = std.ArrayList(u8);
+const Stack = std.ArrayList;
+
+const Word = @import("constants.zig").Word;
 
 pub const Context = struct {
     program_counter: usize,
-    stack: Stack,
+    stack: Stack(Word),
     allocator: Allocator,
 
     const Self = @This();
@@ -13,7 +14,7 @@ pub const Context = struct {
     pub fn init(allocator: Allocator) Self {
         return .{
             .program_counter = 0,
-            .stack = Stack.init(allocator),
+            .stack = Stack(Word).init(allocator),
             .allocator = allocator,
         };
     }

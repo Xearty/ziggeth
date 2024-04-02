@@ -1,0 +1,1 @@
+pub const Word = u256;

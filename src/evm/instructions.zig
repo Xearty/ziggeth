@@ -1,8 +1,9 @@
 const opcodes = @import("opcodes.zig");
+const Word = @import("constants.zig").Word;
 
 pub const Instruction = union(opcodes.Opcode) {
     PUSH1: struct {
-        value: u8,
+        value: Word,
     },
 };
 
