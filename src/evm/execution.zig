@@ -4,17 +4,17 @@ const Instruction = instructions.Instruction;
 
 pub fn executeInstruction(ctx: *Context, instruction: *const Instruction) !void {
     switch (instruction.*) {
-        .PUSH1 => |data| {
-            try ctx.stack.append(data.value);
+        .STOP => {
+            ctx.is_halted = true;
         },
         .ADD => {
             const operand1 = ctx.stack.popOrNull().?;
             const operand2 = ctx.stack.popOrNull().?;
             try ctx.stack.append(operand1 + operand2);
         },
-        .STOP => {
-            ctx.is_halted = true;
-        }
+        .PUSH1 => |data| {
+            try ctx.stack.append(data.value);
+        },
     }
 }
 

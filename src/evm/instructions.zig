@@ -2,18 +2,18 @@ const opcodes = @import("opcodes.zig");
 const Word = @import("constants.zig").Word;
 
 pub const Instruction = union(opcodes.Opcode) {
+    STOP: void,
+    ADD: void,
     PUSH1: struct {
         value: Word,
     },
-    ADD: void,
-    STOP: void,
 };
 
 pub fn getSize(opcode: opcodes.Opcode) usize {
     return switch (opcode) {
-        .PUSH1 => 2,
-        .ADD => 1,
         .STOP => 1,
+        .ADD => 1,
+        .PUSH1 => 2,
     };
 }
 
