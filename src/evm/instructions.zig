@@ -6,12 +6,14 @@ pub const Instruction = union(opcodes.Opcode) {
         value: Word,
     },
     ADD: void,
+    STOP: void,
 };
 
 pub fn getSize(opcode: opcodes.Opcode) usize {
     return switch (opcode) {
         .PUSH1 => 2,
         .ADD => 1,
+        .STOP => 1,
     };
 }
 
@@ -25,5 +27,6 @@ pub fn decode(bytecode_stream: []const u8) Instruction {
             };
         },
         .ADD => return Instruction.ADD,
+        .STOP =>  return Instruction.STOP,
     }
 }

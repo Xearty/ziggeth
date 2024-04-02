@@ -7,6 +7,7 @@ const Word = @import("constants.zig").Word;
 pub const Context = struct {
     program_counter: usize,
     stack: Stack(Word),
+    is_halted: bool,
     allocator: Allocator,
 
     const Self = @This();
@@ -15,6 +16,7 @@ pub const Context = struct {
         return .{
             .program_counter = 0,
             .stack = Stack(Word).init(allocator),
+            .is_halted = false,
             .allocator = allocator,
         };
     }

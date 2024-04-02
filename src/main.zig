@@ -14,6 +14,9 @@ pub fn main() !void {
         @intFromEnum(evm.Opcode.PUSH1), 0x1,
         @intFromEnum(evm.Opcode.PUSH1), 0x2,
         @intFromEnum(evm.Opcode.ADD),
+        @intFromEnum(evm.Opcode.PUSH1), 0x1,
+        @intFromEnum(evm.Opcode.STOP),
+        @intFromEnum(evm.Opcode.ADD),
     };
     try evm.executeBytecode(&evm_context, bytecode);
 
