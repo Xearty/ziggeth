@@ -11,7 +11,7 @@ const InstructionDefinition = struct {
     payload_type: type,
 };
 
-const instruction_definitions: []const InstructionDefinition = &.{
+const instruction_definitions = genPushInstructionDefinitions() ++ [_]InstructionDefinition{
     .{
         .mnemonic = "STOP",
         .opcode = 0x00,
@@ -48,30 +48,6 @@ const instruction_definitions: []const InstructionDefinition = &.{
         .size = 1,
         .payload_type = void,
     },
-    .{
-        .mnemonic = "PUSH1",
-        .opcode = 0x60,
-        .size = 2,
-        .payload_type = struct {
-            value: Word,
-        },
-    },
-    .{
-        .mnemonic = "PUSH2",
-        .opcode = 0x61,
-        .size = 3,
-        .payload_type = struct {
-            value: Word,
-        },
-    },
-    .{
-        .mnemonic = "PUSH3",
-        .opcode = 0x62,
-        .size = 4,
-        .payload_type = struct {
-            value: Word,
-        },
-    },
 };
 
 fn defineOpcodes() type {
@@ -84,14 +60,28 @@ fn defineOpcodes() type {
         };
     }
 
-    return @Type(.{
-        .Enum = .{
-            .tag_type = u8,
-            .fields = &enumDecls,
-            .decls = &.{},
-            .is_exhaustive = true,
-        }
-    });
+    return @Type(.{ .Enum = .{
+        .tag_type = u8,
+        .fields = &enumDecls,
+        .decls = &.{},
+        .is_exhaustive = true,
+    } });
+}
+
+fn genPushInstructionDefinitions() [32]InstructionDefinition {
+    const PushInstructionType = struct { value: Word };
+    var definitions: [32]InstructionDefinition = undefined;
+
+    inline for (0..32) |index| {
+        definitions[index] = InstructionDefinition{
+            .mnemonic = std.fmt.comptimePrint("PUSH{}", .{index + 1}),
+            .opcode = 0x60 + index,
+            .size = index + 2,
+            .payload_type = PushInstructionType,
+        };
+    }
+
+    return definitions;
 }
 
 fn defineInstructions() type {
@@ -105,14 +95,12 @@ fn defineInstructions() type {
         };
     }
 
-    return @Type(.{
-        .Union = .{
-            .tag_type = Opcode,
-            .layout = .Auto,
-            .fields = &variants,
-            .decls = &.{},
-        }
-    });
+    return @Type(.{ .Union = .{
+        .tag_type = Opcode,
+        .layout = .Auto,
+        .fields = &variants,
+        .decls = &.{},
+    } });
 }
 
 pub fn getInstructionSize(opcode: Opcode) usize {
@@ -120,6 +108,7 @@ pub fn getInstructionSize(opcode: Opcode) usize {
         inline else => |_| {
             const instruction_size = blk: {
                 inline for (instruction_definitions) |def| {
+                    @setEvalBranchQuota(10000);
                     if (@intFromEnum(opcode) == def.opcode) {
                         break :blk def.size;
                     }
@@ -128,6 +117,6 @@ pub fn getInstructionSize(opcode: Opcode) usize {
             };
 
             return instruction_size.?;
-        }
+        },
     };
 }
