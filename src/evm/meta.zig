@@ -58,6 +58,12 @@ const instruction_definitions =
         .size = 1,
         .payload_type = void,
     },
+    .{
+        .mnemonic = "SMOD",
+        .opcode = 0x07,
+        .size = 1,
+        .payload_type = void,
+    },
 };
 
 fn DefineOpcodes() type {
