@@ -24,4 +24,8 @@ pub const Context = struct {
     pub fn deinit(self: *Self) void {
         self.stack.deinit();
     }
+
+    pub fn peek(self: *const Self) ?u256 {
+        return self.stack.getLastOrNull();
+    }
 };
