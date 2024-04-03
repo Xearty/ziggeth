@@ -70,6 +70,12 @@ const instruction_definitions =
         .size = 1,
         .payload_type = void,
     },
+    .{
+        .mnemonic = "MULMOD",
+        .opcode = 0x09,
+        .size = 1,
+        .payload_type = void,
+    },
 };
 
 fn DefineOpcodes() type {
