@@ -150,3 +150,24 @@ test "DUP3 instruction" {
         @intFromEnum(evm.Opcode.MUL),
     });
 }
+
+test "SWAP1 instruction" {
+    try basicValueTest(10, &.{
+        @intFromEnum(evm.Opcode.PUSH1), 0x2,
+        @intFromEnum(evm.Opcode.PUSH1), 0x1,
+        @intFromEnum(evm.Opcode.SWAP1),
+        @intFromEnum(evm.Opcode.PUSH1), 0x5,
+        @intFromEnum(evm.Opcode.MUL),
+    });
+}
+
+test "SWAP2 instruction" {
+    try basicValueTest(20, &.{
+        @intFromEnum(evm.Opcode.PUSH1), 0x4,
+        @intFromEnum(evm.Opcode.PUSH1), 0x2,
+        @intFromEnum(evm.Opcode.PUSH1), 0x1,
+        @intFromEnum(evm.Opcode.SWAP2),
+        @intFromEnum(evm.Opcode.PUSH1), 0x5,
+        @intFromEnum(evm.Opcode.MUL),
+    });
+}
