@@ -4,15 +4,49 @@ const expect = testing.expect;
 
 const evm = @import("evm");
 
-test "ADD instruction" {
+fn basicValueTest(expected_value: u256, bytecode: []const u8) !void {
     var evm_context = evm.Context.init(std.testing.allocator);
     defer evm_context.deinit();
 
-    const bytecode: []const u8 = &.{
+    try evm.executeBytecode(&evm_context, bytecode);
+    try expect(evm_context.peek() == expected_value);
+}
+
+test "ADD instruction" {
+    try basicValueTest(0x3, &.{
         @intFromEnum(evm.Opcode.PUSH1), 0x1,
         @intFromEnum(evm.Opcode.PUSH1), 0x2,
         @intFromEnum(evm.Opcode.ADD),
-    };
-    try evm.executeBytecode(&evm_context, bytecode);
-    try expect(evm_context.peek() == 0x3);
+    });
+}
+
+test "MUL instruction" {
+    try basicValueTest(0x25 * 0x53 * 0x31, &.{
+        @intFromEnum(evm.Opcode.PUSH1), 0x25,
+        @intFromEnum(evm.Opcode.PUSH1), 0x53,
+        @intFromEnum(evm.Opcode.MUL),
+        @intFromEnum(evm.Opcode.PUSH1), 0x31,
+        @intFromEnum(evm.Opcode.MUL),
+    });
+}
+
+test "ADD and MUL instructions" {
+    try basicValueTest(0x9, &.{
+        @intFromEnum(evm.Opcode.PUSH1), 0x1,
+        @intFromEnum(evm.Opcode.PUSH1), 0x2,
+        @intFromEnum(evm.Opcode.ADD),
+        @intFromEnum(evm.Opcode.PUSH1), 0x3,
+        @intFromEnum(evm.Opcode.MUL),
+    });
+}
+
+test "STOP instruction" {
+    try basicValueTest(0x3, &.{
+        @intFromEnum(evm.Opcode.PUSH1), 0x1,
+        @intFromEnum(evm.Opcode.PUSH1), 0x2,
+        @intFromEnum(evm.Opcode.ADD),
+        @intFromEnum(evm.Opcode.PUSH1), 0x3,
+        @intFromEnum(evm.Opcode.STOP),
+        @intFromEnum(evm.Opcode.MUL),
+    });
 }
