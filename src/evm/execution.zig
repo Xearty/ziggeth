@@ -32,6 +32,7 @@ pub fn executeInstruction(ctx: *Context, instruction: *const Instruction) !void 
         },
         .PUSH1 => |data| try ctx.stack.append(data.value),
         .PUSH2 => |data| try ctx.stack.append(data.value),
+        .PUSH3 => |data| try ctx.stack.append(data.value),
     }
 }
 

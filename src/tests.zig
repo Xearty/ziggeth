@@ -88,3 +88,13 @@ test "PUSH2 instruction" {
         @intFromEnum(evm.Opcode.MUL),
     });
 }
+
+test "PUSH3 instruction" {
+    try basicValueTest(4849358562, &.{
+        @intFromEnum(evm.Opcode.PUSH3), 0x23, 0xe0, 0x93,
+        @intFromEnum(evm.Opcode.PUSH3), 0x67, 0x79, 0x43,
+        @intFromEnum(evm.Opcode.ADD),
+        @intFromEnum(evm.Opcode.PUSH3), 0x00, 0x02, 0x13,
+        @intFromEnum(evm.Opcode.MUL),
+    });
+}

@@ -13,6 +13,7 @@ pub fn decode(bytecode_stream: []const u8) Instruction {
     return switch (opcode) {
         .PUSH1 => Instruction{ .PUSH1 = .{ .value = utils.wordFromBigEndianBytes(stack_input[0..1]) } },
         .PUSH2 => Instruction{ .PUSH2 = .{ .value = utils.wordFromBigEndianBytes(stack_input[0..2]) } },
+        .PUSH3 => Instruction{ .PUSH3 = .{ .value = utils.wordFromBigEndianBytes(stack_input[0..3]) } },
         inline else => |tag| @field(Instruction, @tagName(tag)),
     };
 }
