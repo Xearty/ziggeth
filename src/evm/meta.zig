@@ -56,6 +56,14 @@ const instruction_definitions: []const InstructionDefinition = &.{
             value: Word,
         },
     },
+    .{
+        .mnemonic = "PUSH2",
+        .opcode = 0x61,
+        .size = 3,
+        .payload_type = struct {
+            value: Word,
+        },
+    },
 };
 
 fn defineOpcodes() type {

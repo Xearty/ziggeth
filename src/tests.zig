@@ -78,3 +78,13 @@ test "MOD instruction" {
         @intFromEnum(evm.Opcode.MOD),
     });
 }
+
+test "PUSH2 instruction" {
+    try basicValueTest(3526993988, &.{
+        @intFromEnum(evm.Opcode.PUSH2), 0x05, 0xad,
+        @intFromEnum(evm.Opcode.PUSH2), 0xf7, 0x02,
+        @intFromEnum(evm.Opcode.ADD),
+        @intFromEnum(evm.Opcode.PUSH2), 0xd4, 0xfc,
+        @intFromEnum(evm.Opcode.MUL),
+    });
+}
