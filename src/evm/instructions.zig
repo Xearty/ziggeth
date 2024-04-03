@@ -14,6 +14,7 @@ pub fn decode(bytecode_stream: []const u8) Instruction {
         .MUL => Instruction.MUL,
         .SUB => Instruction.SUB,
         .DIV => Instruction.DIV,
+        .MOD => Instruction.MOD,
         .STOP => Instruction.STOP,
     };
 }

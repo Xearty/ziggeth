@@ -70,3 +70,11 @@ test "DIV instruction" {
         @intFromEnum(evm.Opcode.DIV),
     });
 }
+
+test "MOD instruction" {
+    try basicValueTest(3, &.{
+        @intFromEnum(evm.Opcode.PUSH1), 5,
+        @intFromEnum(evm.Opcode.PUSH1), 23,
+        @intFromEnum(evm.Opcode.MOD),
+    });
+}
