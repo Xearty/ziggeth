@@ -10,17 +10,17 @@ pub fn executeInstruction(ctx: *Context, instruction: *const Instruction) !void 
         .ADD => {
             const operand1 = ctx.stack.popOrNull().?;
             const operand2 = ctx.stack.popOrNull().?;
-            try ctx.stack.append(operand1 + operand2);
+            try ctx.stack.append(operand1 +% operand2);
         },
         .MUL => {
             const operand1 = ctx.stack.popOrNull().?;
             const operand2 = ctx.stack.popOrNull().?;
-            try ctx.stack.append(operand1 * operand2);
+            try ctx.stack.append(operand1 *% operand2);
         },
         .SUB => {
             const operand1 = ctx.stack.popOrNull().?;
             const operand2 = ctx.stack.popOrNull().?;
-            try ctx.stack.append(operand1 - operand2);
+            try ctx.stack.append(operand1 -% operand2);
         },
         .PUSH1 => |data| {
             try ctx.stack.append(data.value);
