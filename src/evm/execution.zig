@@ -41,7 +41,7 @@ pub fn executeInstruction(ctx: *Context, instruction: *const Instruction) !void 
 
 pub fn executeBytecode(ctx: *Context, bytecode: []const u8) !void {
     while (!ctx.is_halted and ctx.program_counter < bytecode.len) {
-        const instruction = instructions.decode(bytecode[ctx.program_counter..]);
+        const instruction = try instructions.decode(bytecode[ctx.program_counter..]);
         ctx.program_counter += instructions.getInstructionSize(instruction);
         try executeInstruction(ctx, &instruction);
     }
