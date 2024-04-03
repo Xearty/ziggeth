@@ -1,5 +1,5 @@
 const std = @import("std");
-const Word = @import("constants.zig").Word;
+const WordType = @import("constants.zig").WordType;
 
 pub const Opcode = defineOpcodes();
 pub const Instruction = defineInstructions();
@@ -11,8 +11,11 @@ const InstructionDefinition = struct {
     payload_type: type,
 };
 
-const instruction_definitions = genPushInstructionDefinitions() ++ genDupInstructionDefinitions()
-    ++ [_]InstructionDefinition{
+const instruction_definitions =
+    genPushInstructionDefinitions() ++
+    genDupInstructionDefinitions() ++
+    genSwapInstructionDefinitions() ++
+    [_]InstructionDefinition{
     .{
         .mnemonic = "STOP",
         .opcode = 0x00,
@@ -70,7 +73,7 @@ fn defineOpcodes() type {
 }
 
 fn genPushInstructionDefinitions() [32]InstructionDefinition {
-    const PushInstructionType = struct { value: Word };
+    const PushInstructionType = struct { value: WordType };
     var definitions: [32]InstructionDefinition = undefined;
 
     inline for (0..32) |index| {
@@ -81,7 +84,6 @@ fn genPushInstructionDefinitions() [32]InstructionDefinition {
             .payload_type = PushInstructionType,
         };
     }
-
     return definitions;
 }
 
@@ -96,7 +98,20 @@ fn genDupInstructionDefinitions() [16]InstructionDefinition {
             .payload_type = void,
         };
     }
+    return definitions;
+}
 
+fn genSwapInstructionDefinitions() [16]InstructionDefinition {
+    var definitions: [16]InstructionDefinition = undefined;
+
+    inline for (0..16) |index| {
+        definitions[index] = InstructionDefinition{
+            .mnemonic = std.fmt.comptimePrint("SWAP{}", .{index + 1}),
+            .opcode = 0x90 + index,
+            .size = 1,
+            .payload_type = void,
+        };
+    }
     return definitions;
 }
 

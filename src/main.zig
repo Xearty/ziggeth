@@ -11,8 +11,10 @@ pub fn main() !void {
     defer evm_context.deinit();
 
     const bytecode: []const u8 = &.{
+        @intFromEnum(evm.Opcode.PUSH1), 0x2,
+        @intFromEnum(evm.Opcode.PUSH1), 0x1,
+        @intFromEnum(evm.Opcode.SWAP1),
         @intFromEnum(evm.Opcode.PUSH1), 0x5,
-        @intFromEnum(evm.Opcode.DUP1),
         @intFromEnum(evm.Opcode.MUL),
     };
     try evm.executeBytecode(&evm_context, bytecode);

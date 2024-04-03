@@ -1,3 +1,5 @@
+const constants = @import("constants.zig");
+const utils = @import("utils.zig");
 const Context = @import("context.zig").Context;
 const instructions = @import("instructions.zig");
 const Instruction = instructions.Instruction;
@@ -38,6 +40,11 @@ pub fn executeInstruction(ctx: *Context, instruction: *const Instruction) !void 
                 const offset = ctx.stack.items.len - quantity;
                 const value = ctx.stack.items[offset];
                 try ctx.stack.append(value);
+            }
+            if (comptime instructions.isQuantifiedInstruction(@tagName(tag), "SWAP")) |quantity| {
+                const bot_offset = ctx.stack.items.len - quantity - 1;
+                const top_offset = ctx.stack.items.len - 1;
+                utils.swap(constants.WordType, &ctx.stack.items[bot_offset], &ctx.stack.items[top_offset]);
             }
         },
     }
