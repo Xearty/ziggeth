@@ -10,34 +10,34 @@ pub fn executeInstruction(ctx: *Context, instruction: *const Instruction) !void 
     switch (instruction.*) {
         .STOP => ctx.is_halted = true,
         .ADD => {
-            const operand1 = ctx.stack.popOrNull().?;
-            const operand2 = ctx.stack.popOrNull().?;
+            const operand1 = ctx.stack.pop();
+            const operand2 = ctx.stack.pop();
             try ctx.stack.append(operand1 +% operand2);
         },
         .MUL => {
-            const operand1 = ctx.stack.popOrNull().?;
-            const operand2 = ctx.stack.popOrNull().?;
+            const operand1 = ctx.stack.pop();
+            const operand2 = ctx.stack.pop();
             try ctx.stack.append(operand1 *% operand2);
         },
         .SUB => {
-            const operand1 = ctx.stack.popOrNull().?;
-            const operand2 = ctx.stack.popOrNull().?;
+            const operand1 = ctx.stack.pop();
+            const operand2 = ctx.stack.pop();
             try ctx.stack.append(operand1 -% operand2);
         },
         .DIV => {
-            const operand1 = ctx.stack.popOrNull().?;
-            const operand2 = ctx.stack.popOrNull().?;
+            const operand1 = ctx.stack.pop();
+            const operand2 = ctx.stack.pop();
             try ctx.stack.append(operand1 / operand2);
         },
         .SDIV => {
-            const operand1 = @as(SignedWord, @bitCast(ctx.stack.popOrNull().?));
-            const operand2 = @as(SignedWord, @bitCast(ctx.stack.popOrNull().?));
+            const operand1 = @as(SignedWord, @bitCast(ctx.stack.pop()));
+            const operand2 = @as(SignedWord, @bitCast(ctx.stack.pop()));
             const result = @divTrunc(operand1, operand2);
             try ctx.stack.append(@as(Word, @bitCast(result)));
         },
         .MOD => {
-            const operand1 = ctx.stack.popOrNull().?;
-            const operand2 = ctx.stack.popOrNull().?;
+            const operand1 = ctx.stack.pop();
+            const operand2 = ctx.stack.pop();
             try ctx.stack.append(operand1 % operand2);
         },
         inline else => |data, tag| {
