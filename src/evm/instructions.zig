@@ -12,6 +12,7 @@ pub fn decode(bytecode_stream: []const u8) Instruction {
         .PUSH1 => Instruction{ .PUSH1 = .{ .value = bytecode_stream[1] } },
         .ADD => Instruction.ADD,
         .MUL => Instruction.MUL,
+        .SUB => Instruction.SUB,
         .STOP => Instruction.STOP,
     };
 }

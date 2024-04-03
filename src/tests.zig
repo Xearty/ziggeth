@@ -50,3 +50,13 @@ test "STOP instruction" {
         @intFromEnum(evm.Opcode.MUL),
     });
 }
+
+test "SUB instruction" {
+    try basicValueTest(0x6, &.{
+        @intFromEnum(evm.Opcode.PUSH1), 0x1,
+        @intFromEnum(evm.Opcode.PUSH1), 0x2,
+        @intFromEnum(evm.Opcode.ADD),
+        @intFromEnum(evm.Opcode.PUSH1), 0x9,
+        @intFromEnum(evm.Opcode.SUB),
+    });
+}
