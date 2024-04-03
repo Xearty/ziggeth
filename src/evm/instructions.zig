@@ -10,11 +10,6 @@ pub fn decode(bytecode_stream: []const u8) Instruction {
     const opcode = opcodes.fromByte(bytecode_stream[0]);
     return switch (opcode) {
         .PUSH1 => Instruction{ .PUSH1 = .{ .value = bytecode_stream[1] } },
-        .ADD => Instruction.ADD,
-        .MUL => Instruction.MUL,
-        .SUB => Instruction.SUB,
-        .DIV => Instruction.DIV,
-        .MOD => Instruction.MOD,
-        .STOP => Instruction.STOP,
+        inline else => |tag| @field(Instruction, @tagName(tag)),
     };
 }
