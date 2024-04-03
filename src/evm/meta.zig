@@ -11,7 +11,8 @@ const InstructionDefinition = struct {
     payload_type: type,
 };
 
-const instruction_definitions = genPushInstructionDefinitions() ++ [_]InstructionDefinition{
+const instruction_definitions = genPushInstructionDefinitions() ++ genDupInstructionDefinitions()
+    ++ [_]InstructionDefinition{
     .{
         .mnemonic = "STOP",
         .opcode = 0x00,
@@ -78,6 +79,21 @@ fn genPushInstructionDefinitions() [32]InstructionDefinition {
             .opcode = 0x60 + index,
             .size = index + 2,
             .payload_type = PushInstructionType,
+        };
+    }
+
+    return definitions;
+}
+
+fn genDupInstructionDefinitions() [16]InstructionDefinition {
+    var definitions: [16]InstructionDefinition = undefined;
+
+    inline for (0..16) |index| {
+        definitions[index] = InstructionDefinition{
+            .mnemonic = std.fmt.comptimePrint("DUP{}", .{index + 1}),
+            .opcode = 0x80 + index,
+            .size = 1,
+            .payload_type = void,
         };
     }
 

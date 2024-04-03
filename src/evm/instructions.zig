@@ -12,7 +12,7 @@ pub fn decode(bytecode_stream: []const u8) !Instruction {
     const stack_input = bytecode_stream[1..];
     return switch (opcode) {
         inline else => |tag| blk: {
-            if (comptime isQuantifiedInstruction(tag, "PUSH")) |count| {
+            if (comptime isQuantifiedInstruction(@tagName(tag), "PUSH")) |count| {
                 const value = utils.wordFromBigEndianBytes(stack_input[0..count]);
                 break :blk @unionInit(Instruction, @tagName(tag), .{ .value = value });
             }
@@ -21,9 +21,9 @@ pub fn decode(bytecode_stream: []const u8) !Instruction {
     };
 }
 
-fn isQuantifiedInstruction(comptime tag: opcodes.Opcode, comptime prefix: []const u8) ?u32 {
-    if (comptime std.mem.startsWith(u8, @tagName(tag), prefix)) {
-        return std.fmt.parseInt(u32, @tagName(tag)[prefix.len..], 10) catch unreachable;
+pub fn isQuantifiedInstruction(comptime tag_name: []const u8, comptime prefix: []const u8) ?u32 {
+    if (comptime std.mem.startsWith(u8, tag_name, prefix)) {
+        return std.fmt.parseInt(u32, tag_name[prefix.len..], 10) catch unreachable;
     }
     return null;
 }

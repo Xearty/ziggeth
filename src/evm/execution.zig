@@ -30,12 +30,16 @@ pub fn executeInstruction(ctx: *Context, instruction: *const Instruction) !void 
             const operand2 = ctx.stack.popOrNull().?;
             try ctx.stack.append(operand1 % operand2);
         },
-        .PUSH1, .PUSH2, .PUSH3, .PUSH4, .PUSH5, .PUSH6, .PUSH7,
-        .PUSH8, .PUSH9, .PUSH10, .PUSH11, .PUSH12, .PUSH13,
-        .PUSH14, .PUSH15, .PUSH16, .PUSH17, .PUSH18, .PUSH19,
-        .PUSH20, .PUSH21, .PUSH22, .PUSH23, .PUSH24, .PUSH25,
-        .PUSH26, .PUSH27, .PUSH28, .PUSH29, .PUSH30, .PUSH31,
-        .PUSH32 => |data| try ctx.stack.append(data.value),
+        inline else => |data, tag| {
+            if (comptime instructions.isQuantifiedInstruction(@tagName(tag), "PUSH")) |_| {
+                try ctx.stack.append(data.value);
+            }
+            if (comptime instructions.isQuantifiedInstruction(@tagName(tag), "DUP")) |quantity| {
+                const offset = ctx.stack.items.len - quantity;
+                const value = ctx.stack.items[offset];
+                try ctx.stack.append(value);
+            }
+        },
     }
 }
 
