@@ -1,5 +1,5 @@
 const std = @import("std");
-const WordType = @import("constants.zig").WordType;
+const Word = @import("constants.zig").Word;
 
 pub const Opcode = DefineOpcodes();
 pub const Instruction = DefineInstructions();
@@ -47,6 +47,12 @@ const instruction_definitions =
         .payload_type = void,
     },
     .{
+        .mnemonic = "SDIV",
+        .opcode = 0x05,
+        .size = 1,
+        .payload_type = void,
+    },
+    .{
         .mnemonic = "MOD",
         .opcode = 0x06,
         .size = 1,
@@ -73,7 +79,7 @@ fn DefineOpcodes() type {
 }
 
 fn genPushInstructionDefinitions() [32]InstructionDefinition {
-    const PushInstructionType = struct { value: WordType };
+    const PushInstructionType = struct { value: Word };
     var definitions: [32]InstructionDefinition = undefined;
 
     inline for (0..32) |index| {

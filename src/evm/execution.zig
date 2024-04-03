@@ -1,8 +1,10 @@
-const constants = @import("constants.zig");
 const utils = @import("utils.zig");
-const Context = @import("context.zig").Context;
 const instructions = @import("instructions.zig");
+const constants = @import("constants.zig");
+const Context = @import("context.zig").Context;
 const Instruction = instructions.Instruction;
+const Word = constants.Word;
+const SignedWord = constants.SignedWord;
 
 pub fn executeInstruction(ctx: *Context, instruction: *const Instruction) !void {
     switch (instruction.*) {
@@ -27,6 +29,12 @@ pub fn executeInstruction(ctx: *Context, instruction: *const Instruction) !void 
             const operand2 = ctx.stack.popOrNull().?;
             try ctx.stack.append(operand1 / operand2);
         },
+        .SDIV => {
+            const operand1 = @as(SignedWord, @bitCast(ctx.stack.popOrNull().?));
+            const operand2 = @as(SignedWord, @bitCast(ctx.stack.popOrNull().?));
+            const result = @divTrunc(operand1, operand2);
+            try ctx.stack.append(@as(Word, @bitCast(result)));
+        },
         .MOD => {
             const operand1 = ctx.stack.popOrNull().?;
             const operand2 = ctx.stack.popOrNull().?;
@@ -44,7 +52,7 @@ pub fn executeInstruction(ctx: *Context, instruction: *const Instruction) !void 
             if (comptime instructions.isQuantifiedInstruction(@tagName(tag), "SWAP")) |quantity| {
                 const bot_offset = ctx.stack.items.len - quantity - 1;
                 const top_offset = ctx.stack.items.len - 1;
-                utils.swap(constants.WordType, &ctx.stack.items[bot_offset], &ctx.stack.items[top_offset]);
+                utils.swap(Word, &ctx.stack.items[bot_offset], &ctx.stack.items[top_offset]);
             }
         },
     }

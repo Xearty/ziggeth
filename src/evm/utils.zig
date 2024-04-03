@@ -1,7 +1,7 @@
-const WordType = @import("constants.zig").WordType;
+const Word = @import("constants.zig").Word;
 
-pub fn wordFromBigEndianBytes(bytes: []const u8) WordType {
-    var result: WordType = 0;
+pub fn wordFromBigEndianBytes(bytes: []const u8) Word {
+    var result: Word = 0;
     for (bytes) |byte| result = (result << 8) | byte;
     return result;
 }
