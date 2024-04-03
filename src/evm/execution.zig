@@ -46,6 +46,13 @@ pub fn executeInstruction(ctx: *Context, instruction: *const Instruction) !void 
             const result = @mod(operand1, operand2);
             try ctx.stack.append(@as(Word, @bitCast(result)));
         },
+        .ADDMOD => {
+            const operand1 = ctx.stack.pop();
+            const operand2 = ctx.stack.pop();
+            const operand3 = ctx.stack.pop();
+            const result = (operand1 + operand2) % operand3;
+            try ctx.stack.append(result);
+        },
         inline else => |data, tag| {
             if (comptime instructions.isQuantifiedInstruction(@tagName(tag), "PUSH")) |_| {
                 try ctx.stack.append(data.value);
