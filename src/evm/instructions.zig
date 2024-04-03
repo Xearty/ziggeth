@@ -13,6 +13,7 @@ pub fn decode(bytecode_stream: []const u8) Instruction {
         .ADD => Instruction.ADD,
         .MUL => Instruction.MUL,
         .SUB => Instruction.SUB,
+        .DIV => Instruction.DIV,
         .STOP => Instruction.STOP,
     };
 }

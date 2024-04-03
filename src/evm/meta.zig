@@ -37,6 +37,12 @@ const instruction_definitions: []const InstructionDefinition = &.{
         .payload_type = void,
     },
     .{
+        .mnemonic = "DIV",
+        .opcode = 0x04,
+        .size = 1,
+        .payload_type = void,
+    },
+    .{
         .mnemonic = "PUSH1",
         .opcode = 0x60,
         .size = 2,

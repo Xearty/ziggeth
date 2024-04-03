@@ -60,3 +60,13 @@ test "SUB instruction" {
         @intFromEnum(evm.Opcode.SUB),
     });
 }
+
+test "DIV instruction" {
+    try basicValueTest(0x3, &.{
+        @intFromEnum(evm.Opcode.PUSH1), 0x1,
+        @intFromEnum(evm.Opcode.PUSH1), 0x9,
+        @intFromEnum(evm.Opcode.ADD),
+        @intFromEnum(evm.Opcode.PUSH1), 0x20,
+        @intFromEnum(evm.Opcode.DIV),
+    });
+}
