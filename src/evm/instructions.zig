@@ -8,15 +8,10 @@ pub const getInstructionSize = meta.getInstructionSize;
 
 pub fn decode(bytecode_stream: []const u8) Instruction {
     const opcode = opcodes.fromByte(bytecode_stream[0]);
-    switch (opcode) {
-        .PUSH1 => {
-            const value = bytecode_stream[1];
-            return Instruction{
-                .PUSH1 = .{ .value = value },
-            };
-        },
-        .ADD => return Instruction.ADD,
-        .MUL => return Instruction.MUL,
-        .STOP =>  return Instruction.STOP,
-    }
+    return switch (opcode) {
+        .PUSH1 => Instruction{ .PUSH1 = .{ .value = bytecode_stream[1] } },
+        .ADD => Instruction.ADD,
+        .MUL => Instruction.MUL,
+        .STOP => Instruction.STOP,
+    };
 }
