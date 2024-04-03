@@ -1,8 +1,8 @@
 const std = @import("std");
 const WordType = @import("constants.zig").WordType;
 
-pub const Opcode = defineOpcodes();
-pub const Instruction = defineInstructions();
+pub const Opcode = DefineOpcodes();
+pub const Instruction = DefineInstructions();
 
 const InstructionDefinition = struct {
     mnemonic: []const u8,
@@ -54,7 +54,7 @@ const instruction_definitions =
     },
 };
 
-fn defineOpcodes() type {
+fn DefineOpcodes() type {
     var enumDecls: [instruction_definitions.len]std.builtin.Type.EnumField = undefined;
 
     inline for (instruction_definitions, 0..) |def, index| {
@@ -115,7 +115,7 @@ fn genSwapInstructionDefinitions() [16]InstructionDefinition {
     return definitions;
 }
 
-fn defineInstructions() type {
+fn DefineInstructions() type {
     var variants: [instruction_definitions.len]std.builtin.Type.UnionField = undefined;
 
     inline for (instruction_definitions, 0..) |def, index| {
