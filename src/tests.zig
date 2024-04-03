@@ -122,3 +122,31 @@ test "PUSH32 instruction" {
         @intFromEnum(evm.Opcode.ADD),
     });
 }
+
+test "DUP1 instruction" {
+    try basicValueTest(25, &.{
+        @intFromEnum(evm.Opcode.PUSH1), 0x5,
+        @intFromEnum(evm.Opcode.DUP1),
+        @intFromEnum(evm.Opcode.MUL),
+    });
+}
+
+test "DUP2 instruction" {
+    try basicValueTest(48, &.{
+        @intFromEnum(evm.Opcode.PUSH1), 0x5,
+        @intFromEnum(evm.Opcode.PUSH1), 0x8,
+        @intFromEnum(evm.Opcode.PUSH1), 0x6,
+        @intFromEnum(evm.Opcode.DUP2),
+        @intFromEnum(evm.Opcode.MUL),
+    });
+}
+
+test "DUP3 instruction" {
+    try basicValueTest(30, &.{
+        @intFromEnum(evm.Opcode.PUSH1), 0x5,
+        @intFromEnum(evm.Opcode.PUSH1), 0x8,
+        @intFromEnum(evm.Opcode.PUSH1), 0x6,
+        @intFromEnum(evm.Opcode.DUP3),
+        @intFromEnum(evm.Opcode.MUL),
+    });
+}
