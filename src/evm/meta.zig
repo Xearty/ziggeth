@@ -83,7 +83,7 @@ fn DefineOpcodes() type {
 
     inline for (instruction_definitions, 0..) |def, index| {
         enumDecls[index] = .{
-            .name = def.mnemonic,
+            .name = def.mnemonic ++ "",
             .value = def.opcode,
         };
     }
@@ -144,7 +144,7 @@ fn DefineInstructions() type {
 
     inline for (instruction_definitions, 0..) |def, index| {
         variants[index] = .{
-            .name = def.mnemonic,
+            .name = def.mnemonic ++ "",
             .type = def.payload_type,
             .alignment = @alignOf(def.payload_type),
         };
