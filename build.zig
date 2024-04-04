@@ -23,10 +23,9 @@ pub fn build(b: *std.Build) void {
     });
 
     const evm_module = b.createModule(.{
-        .source_file = .{ .path = "src/evm/root.zig" },
-        .dependencies = &.{},
+        .root_source_file = .{ .path = "src/evm/root.zig" },
     });
-    exe.addModule("evm", evm_module);
+    exe.root_module.addImport("evm", evm_module);
 
     // This declares intent for the executable to be installed into the
     // standard location when the user invokes the "install" step (the default
@@ -63,7 +62,7 @@ pub fn build(b: *std.Build) void {
         .target = target,
         .optimize = optimize,
     });
-    lib_unit_tests.addModule("evm", evm_module);
+    lib_unit_tests.root_module.addImport("evm", evm_module);
 
     const run_lib_unit_tests = b.addRunArtifact(lib_unit_tests);
 
