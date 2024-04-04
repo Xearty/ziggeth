@@ -22,9 +22,16 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
     });
 
+    const math_module = b.createModule(.{
+        .root_source_file = .{ .path = "src/math/root.zig" },
+    });
+
     const evm_module = b.createModule(.{
         .root_source_file = .{ .path = "src/evm/root.zig" },
     });
+    evm_module.addImport("math", math_module);
+
+    exe.root_module.addImport("math", math_module);
     exe.root_module.addImport("evm", evm_module);
 
     // This declares intent for the executable to be installed into the

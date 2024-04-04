@@ -1,6 +1,7 @@
 const utils = @import("utils.zig");
 const instructions = @import("instructions.zig");
 const constants = @import("constants.zig");
+const math = @import("math");
 const Context = @import("context.zig").Context;
 const Instruction = instructions.Instruction;
 const Word = constants.Word;
@@ -59,6 +60,11 @@ pub fn executeInstruction(ctx: *Context, instruction: *const Instruction) !void 
             const operand3 = ctx.stack.pop();
             const result = (operand1 * operand2) % operand3;
             try ctx.stack.append(result);
+        },
+        .EXP => {
+            const operand1 = ctx.stack.pop();
+            const operand2 = ctx.stack.pop();
+            try ctx.stack.append(math.pow(Word, operand1, operand2));
         },
         inline else => |data, tag| {
             if (comptime instructions.isQuantifiedInstruction(@tagName(tag), "PUSH")) |_| {

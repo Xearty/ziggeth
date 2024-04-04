@@ -76,6 +76,12 @@ const instruction_definitions =
         .size = 1,
         .payload_type = void,
     },
+    .{
+        .mnemonic = "EXP",
+        .opcode = 0x0a,
+        .size = 1,
+        .payload_type = void,
+    },
 };
 
 fn DefineOpcodes() type {
