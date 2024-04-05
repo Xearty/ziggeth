@@ -172,11 +172,11 @@ fn DefineInstructions() type {
 
 pub fn getInstructionSize(opcode: Opcode) usize {
     return switch (opcode) {
-        inline else => |tag| {
+        inline else => |tag| blk: {
             inline for (instruction_definitions) |def| {
                 @setEvalBranchQuota(10000);
                 if (comptime @intFromEnum(tag) == def.opcode) {
-                    return def.size;
+                    break :blk def.size;
                 }
             }
         },
