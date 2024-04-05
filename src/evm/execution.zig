@@ -9,7 +9,7 @@ const SignedWord = constants.SignedWord;
 
 pub fn executeInstruction(ctx: *Context, instruction: *const Instruction) !void {
     switch (instruction.*) {
-        .STOP => ctx.is_halted = true,
+        .STOP => ctx.status = .HALTED,
         .ADD => {
             const operand1 = ctx.stack.pop();
             const operand2 = ctx.stack.pop();
@@ -79,10 +79,10 @@ pub fn executeInstruction(ctx: *Context, instruction: *const Instruction) !void 
     }
 }
 
-pub fn executeBytecode(ctx: *Context, bytecode: []const u8) !void {
-    while (!ctx.is_halted and ctx.program_counter < bytecode.len) {
-        const instruction = try instructions.decode(bytecode[ctx.program_counter..]);
-        ctx.program_counter += instructions.getSize(instruction);
+pub fn execute(ctx: *Context) !void {
+    while (ctx.status == .RUNNING) {
+        const instruction = try instructions.decode(ctx.bytecode[ctx.program_counter..]);
+        ctx.advanceProgramCounter(instructions.getSize(instruction));
         try executeInstruction(ctx, &instruction);
     }
 }

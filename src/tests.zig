@@ -5,11 +5,11 @@ const expect = testing.expect;
 const evm = @import("evm");
 
 fn basicValueTest(expected_value: u256, bytecode: []const u8) !void {
-    var evm_context = evm.Context.init(std.testing.allocator);
+    var evm_context = evm.Context.init(std.testing.allocator, bytecode);
     defer evm_context.deinit();
 
-    try evm.executeBytecode(&evm_context, bytecode);
-    try expect(evm_context.peek() == expected_value);
+    try evm.execute(&evm_context);
+    try expect(evm_context.stack.peek() == expected_value);
 }
 
 test "ADD instruction" {

@@ -18,6 +18,10 @@ pub fn Stack(comptime T: type) type {
             self.inner.deinit();
         }
 
+        pub fn peek(self: *Self) ?T {
+            return self.inner.getLastOrNull();
+        }
+
         pub fn push(self: *Self, value: T) !void {
             try self.inner.append(value);
         }

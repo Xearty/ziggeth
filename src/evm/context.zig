@@ -5,17 +5,19 @@ const Stack = @import("stack.zig").Stack;
 
 pub const Context = struct {
     program_counter: usize,
+    bytecode: []const u8,
     stack: Stack(Word),
-    is_halted: bool,
+    status: VMStatus,
     allocator: Allocator,
 
     const Self = @This();
 
-    pub fn init(allocator: Allocator) Self {
+    pub fn init(allocator: Allocator, bytecode: []const u8) Self {
         return .{
             .program_counter = 0,
+            .bytecode = bytecode,
             .stack = Stack(Word).init(allocator),
-            .is_halted = false,
+            .status = .RUNNING,
             .allocator = allocator,
         };
     }
@@ -24,7 +26,16 @@ pub const Context = struct {
         self.stack.deinit();
     }
 
-    pub fn peek(self: *const Self) ?u256 {
-        return self.stack.inner.getLastOrNull();
+    pub fn advanceProgramCounter(self: *Self, leap: usize) void {
+        self.program_counter += leap;
+        if (self.program_counter >= self.bytecode.len) {
+            self.status = .HALTED;
+        }
     }
 };
+
+pub const VMStatus = enum {
+    RUNNING,
+    HALTED,
+};
+
