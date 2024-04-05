@@ -72,9 +72,15 @@ pub fn executeInstruction(ctx: *Context, instruction: *const Instruction) !void 
             try ctx.stack.push(utils.signExtend(operand2, operand1));
         },
         inline else => |data, tag| {
-            if (comptime instructions.isQuantified(tag, "PUSH")) |_| try ctx.stack.push(data.value);
-            if (comptime instructions.isQuantified(tag, "DUP")) |offset| try ctx.stack.dup(offset);
-            if (comptime instructions.isQuantified(tag, "SWAP")) |offset| try ctx.stack.swap(offset);
+            if (comptime instructions.isQuantified(tag, "PUSH")) |_| {
+                try ctx.stack.push(data.value);
+            } else if (comptime instructions.isQuantified(tag, "DUP")) |offset| {
+                try ctx.stack.dup(offset);
+            } else if (comptime instructions.isQuantified(tag, "SWAP")) |offset| {
+                try ctx.stack.swap(offset);
+            } else {
+                @compileError("Unhandled opcode " ++ @tagName(tag));
+            }
         },
     }
 }
