@@ -101,7 +101,7 @@ fn genPushInstructionDefinitions() [32]InstructionDefinition {
     const PushInstructionType = struct { value: Word };
     var definitions: [32]InstructionDefinition = undefined;
 
-    inline for (0..32) |index| {
+    inline for (0..definitions.len) |index| {
         definitions[index] = InstructionDefinition{
             .mnemonic = std.fmt.comptimePrint("PUSH{}", .{index + 1}),
             .opcode = 0x60 + index,
@@ -115,7 +115,7 @@ fn genPushInstructionDefinitions() [32]InstructionDefinition {
 fn genDupInstructionDefinitions() [16]InstructionDefinition {
     var definitions: [16]InstructionDefinition = undefined;
 
-    inline for (0..16) |index| {
+    inline for (0..definitions.len) |index| {
         definitions[index] = InstructionDefinition{
             .mnemonic = std.fmt.comptimePrint("DUP{}", .{index + 1}),
             .opcode = 0x80 + index,
@@ -129,7 +129,7 @@ fn genDupInstructionDefinitions() [16]InstructionDefinition {
 fn genSwapInstructionDefinitions() [16]InstructionDefinition {
     var definitions: [16]InstructionDefinition = undefined;
 
-    inline for (0..16) |index| {
+    inline for (0..definitions.len) |index| {
         definitions[index] = InstructionDefinition{
             .mnemonic = std.fmt.comptimePrint("SWAP{}", .{index + 1}),
             .opcode = 0x90 + index,
