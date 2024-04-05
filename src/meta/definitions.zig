@@ -1,13 +1,16 @@
 const std = @import("std");
-const instruction_definitions = @import("instruction_definitions.zig").instruction_definitions;
+const EnumField = std.builtin.Type.EnumField;
+const UnionField = std.builtin.Type.UnionField;
+
+const defs = @import("instruction_definitions.zig").instruction_definitions;
 
 pub const Opcode = DefineOpcodes();
 pub const Instruction = DefineInstructions();
 
 fn DefineOpcodes() type {
-    var enumDecls: [instruction_definitions.len]std.builtin.Type.EnumField = undefined;
+    var enumDecls: [defs.len]EnumField = undefined;
 
-    inline for (instruction_definitions, 0..) |def, index| {
+    inline for (defs, 0..) |def, index| {
         enumDecls[index] = .{
             .name = def.mnemonic ++ "",
             .value = def.opcode,
@@ -23,9 +26,9 @@ fn DefineOpcodes() type {
 }
 
 fn DefineInstructions() type {
-    var variants: [instruction_definitions.len]std.builtin.Type.UnionField = undefined;
+    var variants: [defs.len]UnionField = undefined;
 
-    inline for (instruction_definitions, 0..) |def, index| {
+    inline for (defs, 0..) |def, index| {
         variants[index] = .{
             .name = def.mnemonic ++ "",
             .type = def.payload_type,
