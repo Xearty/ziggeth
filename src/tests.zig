@@ -323,3 +323,14 @@ test "EXP instruction exponent 256" {
         @intFromEnum(evm.Opcode.EXP),
     });
 }
+
+test "SIGNEXTEND instruction" {
+    try basicValueTest(115792082335569848633007197573932045576244532214550284317904613665618839272930, &.{
+        @intFromEnum(evm.Opcode.PUSH12),
+        0x3c, 0x66, 0x08, 0x01,
+        0xb8, 0xeb, 0x42, 0x5f,
+        0x57, 0x08, 0xfd, 0xe2,
+        @intFromEnum(evm.Opcode.PUSH1), 28,
+        @intFromEnum(evm.Opcode.SIGNEXTEND),
+    });
+}

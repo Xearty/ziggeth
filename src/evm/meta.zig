@@ -82,6 +82,12 @@ const instruction_definitions =
         .size = 1,
         .payload_type = void,
     },
+    .{
+        .mnemonic = "SIGNEXTEND",
+        .opcode = 0x0b,
+        .size = 1,
+        .payload_type = void,
+    },
 };
 
 fn DefineOpcodes() type {
