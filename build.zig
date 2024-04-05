@@ -79,15 +79,15 @@ pub fn build(b: *std.Build) void {
 
     // Creates a step for unit testing. This only builds the test executable
     // but does not run it.
-    const lib_unit_tests = b.addTest(.{
-        .root_source_file = .{ .path = "src/tests.zig" },
+    const evm_tests = b.addTest(.{
+        .root_source_file = .{ .path = "src/tests/evm_tests.zig" },
         .target = target,
         .optimize = optimize,
     });
-    lib_unit_tests.root_module.addImport("evm", evm_module);
-    lib_unit_tests.root_module.addImport("constants", constants_module);
+    evm_tests.root_module.addImport("evm", evm_module);
+    evm_tests.root_module.addImport("constants", constants_module);
 
-    const run_lib_unit_tests = b.addRunArtifact(lib_unit_tests);
+    const run_lib_unit_tests = b.addRunArtifact(evm_tests);
 
     // Similar to creating the run step earlier, this exposes a `test` step to
     // the `zig build --help` menu, providing a way for the user to request
