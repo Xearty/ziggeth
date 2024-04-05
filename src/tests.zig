@@ -3,8 +3,10 @@ const testing = std.testing;
 const expect = testing.expect;
 
 const evm = @import("evm");
+const Word = @import("constants").Word;
+const SignedWord = @import("constants").SignedWord;
 
-fn basicValueTest(expected_value: u256, bytecode: []const u8) !void {
+fn basicValueTest(expected_value: Word, bytecode: []const u8) !void {
     var evm_context = evm.Context.init(std.testing.allocator, bytecode);
     defer evm_context.deinit();
 
@@ -173,7 +175,7 @@ test "SWAP2 instruction" {
 }
 
 test "SDIV instruction" {
-    try basicValueTest(@as(u256, @bitCast(@as(i256, -2))), &.{
+    try basicValueTest(@as(Word, @bitCast(@as(SignedWord, -2))), &.{
         @intFromEnum(evm.Opcode.PUSH32),
         0xff, 0xff, 0xff, 0xff,
         0xff, 0xff, 0xff, 0xff,

@@ -85,6 +85,7 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
     });
     lib_unit_tests.root_module.addImport("evm", evm_module);
+    lib_unit_tests.root_module.addImport("constants", constants_module);
 
     const run_lib_unit_tests = b.addRunArtifact(lib_unit_tests);
 
