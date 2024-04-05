@@ -352,3 +352,19 @@ test "LT instruction false" {
         @intFromEnum(evm.Opcode.LT),
     });
 }
+
+test "GT instruction true" {
+    try basicValueTest(1, &.{
+        @intFromEnum(evm.Opcode.PUSH1), 58,
+        @intFromEnum(evm.Opcode.PUSH1), 93,
+        @intFromEnum(evm.Opcode.GT),
+    });
+}
+
+test "GT instruction false" {
+    try basicValueTest(0, &.{
+        @intFromEnum(evm.Opcode.PUSH1), 93,
+        @intFromEnum(evm.Opcode.PUSH1), 58,
+        @intFromEnum(evm.Opcode.GT),
+    });
+}
