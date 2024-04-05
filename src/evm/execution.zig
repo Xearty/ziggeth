@@ -72,9 +72,9 @@ pub fn executeInstruction(ctx: *Context, instruction: *const Instruction) !void 
             try ctx.stack.push(utils.signExtend(operand2, operand1));
         },
         inline else => |data, tag| {
-            if (comptime instructions.isQuantifiedInstruction(@tagName(tag), "PUSH")) |_| try ctx.stack.push(data.value);
-            if (comptime instructions.isQuantifiedInstruction(@tagName(tag), "DUP")) |offset| try ctx.stack.dup(offset);
-            if (comptime instructions.isQuantifiedInstruction(@tagName(tag), "SWAP")) |offset| try ctx.stack.swap(offset);
+            if (comptime instructions.isQuantified(tag, "PUSH")) |_| try ctx.stack.push(data.value);
+            if (comptime instructions.isQuantified(tag, "DUP")) |offset| try ctx.stack.dup(offset);
+            if (comptime instructions.isQuantified(tag, "SWAP")) |offset| try ctx.stack.swap(offset);
         },
     }
 }
@@ -82,7 +82,7 @@ pub fn executeInstruction(ctx: *Context, instruction: *const Instruction) !void 
 pub fn executeBytecode(ctx: *Context, bytecode: []const u8) !void {
     while (!ctx.is_halted and ctx.program_counter < bytecode.len) {
         const instruction = try instructions.decode(bytecode[ctx.program_counter..]);
-        ctx.program_counter += instructions.getInstructionSize(instruction);
+        ctx.program_counter += instructions.getSize(instruction);
         try executeInstruction(ctx, &instruction);
     }
 }
