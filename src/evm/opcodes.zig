@@ -1,7 +1,8 @@
 const std = @import("std");
+const meta = @import("meta");
 const assert = std.debug.assert;
 
-pub const Opcode = @import("meta.zig").Opcode;
+pub const Opcode = meta.Opcode;
 
 pub fn fromByte(byte: u8) Opcode {
     assert(isValidOpcode(byte));

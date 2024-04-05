@@ -1,6 +1,6 @@
 const std = @import("std");
 const Allocator = std.mem.Allocator;
-const Word = @import("constants.zig").Word;
+const Word = @import("constants").Word;
 const Stack = @import("stack.zig").Stack;
 
 pub const Context = struct {

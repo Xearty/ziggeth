@@ -1,8 +1,5 @@
 const std = @import("std");
-const Word = @import("constants.zig").Word;
-
-pub const Opcode = DefineOpcodes();
-pub const Instruction = DefineInstructions();
+const Word = @import("constants").Word;
 
 const InstructionDefinition = struct {
     mnemonic: []const u8,
@@ -11,11 +8,7 @@ const InstructionDefinition = struct {
     payload_type: type,
 };
 
-const instruction_definitions =
-    genPushInstructionDefinitions() ++
-    genDupInstructionDefinitions() ++
-    genSwapInstructionDefinitions() ++
-    [_]InstructionDefinition{
+pub const instruction_definitions = [_]InstructionDefinition{
     .{
         .mnemonic = "STOP",
         .opcode = 0x00,
@@ -88,25 +81,9 @@ const instruction_definitions =
         .size = 1,
         .payload_type = void,
     },
-};
-
-fn DefineOpcodes() type {
-    var enumDecls: [instruction_definitions.len]std.builtin.Type.EnumField = undefined;
-
-    inline for (instruction_definitions, 0..) |def, index| {
-        enumDecls[index] = .{
-            .name = def.mnemonic ++ "",
-            .value = def.opcode,
-        };
-    }
-
-    return @Type(.{ .Enum = .{
-        .tag_type = u8,
-        .fields = &enumDecls,
-        .decls = &.{},
-        .is_exhaustive = true,
-    } });
-}
+} ++ genPushInstructionDefinitions()
+  ++ genDupInstructionDefinitions()
+  ++ genSwapInstructionDefinitions();
 
 fn genPushInstructionDefinitions() [32]InstructionDefinition {
     const PushInstructionType = struct { value: Word };
@@ -149,36 +126,4 @@ fn genSwapInstructionDefinitions() [16]InstructionDefinition {
         };
     }
     return definitions;
-}
-
-fn DefineInstructions() type {
-    var variants: [instruction_definitions.len]std.builtin.Type.UnionField = undefined;
-
-    inline for (instruction_definitions, 0..) |def, index| {
-        variants[index] = .{
-            .name = def.mnemonic ++ "",
-            .type = def.payload_type,
-            .alignment = @alignOf(def.payload_type),
-        };
-    }
-
-    return @Type(.{ .Union = .{
-        .tag_type = Opcode,
-        .layout = .Auto,
-        .fields = &variants,
-        .decls = &.{},
-    } });
-}
-
-pub fn getInstructionSize(opcode: Opcode) usize {
-    return switch (opcode) {
-        inline else => |tag| blk: {
-            inline for (instruction_definitions) |def| {
-                @setEvalBranchQuota(10000);
-                if (comptime @intFromEnum(tag) == def.opcode) {
-                    break :blk def.size;
-                }
-            }
-        },
-    };
 }

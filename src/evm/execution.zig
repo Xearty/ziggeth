@@ -1,6 +1,6 @@
 const utils = @import("utils.zig");
 const instructions = @import("instructions.zig");
-const constants = @import("constants.zig");
+const constants = @import("constants");
 const math = @import("math");
 const Context = @import("context.zig").Context;
 const Instruction = instructions.Instruction;

@@ -1,5 +1,5 @@
 const std = @import("std");
-const Word = @import("constants.zig").Word;
+const Word = @import("constants").Word;
 
 pub fn wordFromBigEndianBytes(bytes: []const u8) Word {
     var result: Word = 0;
