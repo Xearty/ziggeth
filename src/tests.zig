@@ -336,3 +336,19 @@ test "SIGNEXTEND instruction" {
         @intFromEnum(evm.Opcode.SIGNEXTEND),
     });
 }
+
+test "LT instruction true" {
+    try basicValueTest(1, &.{
+        @intFromEnum(evm.Opcode.PUSH1), 93,
+        @intFromEnum(evm.Opcode.PUSH1), 58,
+        @intFromEnum(evm.Opcode.LT),
+    });
+}
+
+test "LT instruction false" {
+    try basicValueTest(0, &.{
+        @intFromEnum(evm.Opcode.PUSH1), 58,
+        @intFromEnum(evm.Opcode.PUSH1), 93,
+        @intFromEnum(evm.Opcode.LT),
+    });
+}
