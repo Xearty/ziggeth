@@ -1,7 +1,7 @@
 const std = @import("std");
 const Allocator = std.mem.Allocator;
-const Stack = std.ArrayList;
 const Word = @import("constants.zig").Word;
+const Stack = @import("stack.zig").Stack;
 
 pub const Context = struct {
     program_counter: usize,
@@ -25,6 +25,6 @@ pub const Context = struct {
     }
 
     pub fn peek(self: *const Self) ?u256 {
-        return self.stack.getLastOrNull();
+        return self.stack.inner.getLastOrNull();
     }
 };

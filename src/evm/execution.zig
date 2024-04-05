@@ -13,78 +13,68 @@ pub fn executeInstruction(ctx: *Context, instruction: *const Instruction) !void 
         .ADD => {
             const operand1 = ctx.stack.pop();
             const operand2 = ctx.stack.pop();
-            try ctx.stack.append(operand1 +% operand2);
+            try ctx.stack.push(operand1 +% operand2);
         },
         .MUL => {
             const operand1 = ctx.stack.pop();
             const operand2 = ctx.stack.pop();
-            try ctx.stack.append(operand1 *% operand2);
+            try ctx.stack.push(operand1 *% operand2);
         },
         .SUB => {
             const operand1 = ctx.stack.pop();
             const operand2 = ctx.stack.pop();
-            try ctx.stack.append(operand1 -% operand2);
+            try ctx.stack.push(operand1 -% operand2);
         },
         .DIV => {
             const operand1 = ctx.stack.pop();
             const operand2 = ctx.stack.pop();
-            try ctx.stack.append(operand1 / operand2);
+            try ctx.stack.push(operand1 / operand2);
         },
         .SDIV => {
             const operand1 = @as(SignedWord, @bitCast(ctx.stack.pop()));
             const operand2 = @as(SignedWord, @bitCast(ctx.stack.pop()));
             const result = @divTrunc(operand1, operand2);
-            try ctx.stack.append(@as(Word, @bitCast(result)));
+            try ctx.stack.push(@as(Word, @bitCast(result)));
         },
         .MOD => {
             const operand1 = ctx.stack.pop();
             const operand2 = ctx.stack.pop();
-            try ctx.stack.append(operand1 % operand2);
+            try ctx.stack.push(operand1 % operand2);
         },
         .SMOD => {
             const operand1 = @as(SignedWord, @bitCast(ctx.stack.pop()));
             const operand2 = @as(SignedWord, @bitCast(ctx.stack.pop()));
             const result = @mod(operand1, operand2);
-            try ctx.stack.append(@as(Word, @bitCast(result)));
+            try ctx.stack.push(@as(Word, @bitCast(result)));
         },
         .ADDMOD => {
             const operand1 = ctx.stack.pop();
             const operand2 = ctx.stack.pop();
             const operand3 = ctx.stack.pop();
             const result = (operand1 + operand2) % operand3;
-            try ctx.stack.append(result);
+            try ctx.stack.push(result);
         },
         .MULMOD => {
             const operand1 = ctx.stack.pop();
             const operand2 = ctx.stack.pop();
             const operand3 = ctx.stack.pop();
             const result = (operand1 * operand2) % operand3;
-            try ctx.stack.append(result);
+            try ctx.stack.push(result);
         },
         .EXP => {
             const operand1 = ctx.stack.pop();
             const operand2 = ctx.stack.pop();
-            try ctx.stack.append(math.pow(Word, operand1, operand2));
+            try ctx.stack.push(math.pow(Word, operand1, operand2));
         },
         .SIGNEXTEND => {
             const operand1 = ctx.stack.pop();
             const operand2 = ctx.stack.pop();
-            try ctx.stack.append(utils.signExtend(operand2, operand1));
+            try ctx.stack.push(utils.signExtend(operand2, operand1));
         },
         inline else => |data, tag| {
-            if (comptime instructions.isQuantifiedInstruction(@tagName(tag), "PUSH")) |_| {
-                try ctx.stack.append(data.value);
-            }
-            if (comptime instructions.isQuantifiedInstruction(@tagName(tag), "DUP")) |quantity| {
-                const offset = ctx.stack.items.len - quantity;
-                const value = ctx.stack.items[offset];
-                try ctx.stack.append(value);
-            }
-            if (comptime instructions.isQuantifiedInstruction(@tagName(tag), "SWAP")) |quantity| {
-                const bot_offset = ctx.stack.items.len - quantity - 1;
-                const top_offset = ctx.stack.items.len - 1;
-                utils.swap(Word, &ctx.stack.items[bot_offset], &ctx.stack.items[top_offset]);
-            }
+            if (comptime instructions.isQuantifiedInstruction(@tagName(tag), "PUSH")) |_| try ctx.stack.push(data.value);
+            if (comptime instructions.isQuantifiedInstruction(@tagName(tag), "DUP")) |offset| try ctx.stack.dup(offset);
+            if (comptime instructions.isQuantifiedInstruction(@tagName(tag), "SWAP")) |offset| try ctx.stack.swap(offset);
         },
     }
 }
