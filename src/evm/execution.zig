@@ -7,6 +7,14 @@ const Instruction = instructions.Instruction;
 const Word = constants.Word;
 const SignedWord = constants.SignedWord;
 
+pub fn execute(ctx: *Context) !void {
+    while (ctx.status == .RUNNING) {
+        const instruction = try instructions.decode(ctx.bytecode[ctx.program_counter..]);
+        ctx.advanceProgramCounter(instructions.getSize(instruction));
+        try executeInstruction(ctx, &instruction);
+    }
+}
+
 pub fn executeInstruction(ctx: *Context, instruction: *const Instruction) !void {
     switch (instruction.*) {
         .STOP => ctx.status = .HALTED,
@@ -116,10 +124,3 @@ pub fn executeInstruction(ctx: *Context, instruction: *const Instruction) !void 
     }
 }
 
-pub fn execute(ctx: *Context) !void {
-    while (ctx.status == .RUNNING) {
-        const instruction = try instructions.decode(ctx.bytecode[ctx.program_counter..]);
-        ctx.advanceProgramCounter(instructions.getSize(instruction));
-        try executeInstruction(ctx, &instruction);
-    }
-}
