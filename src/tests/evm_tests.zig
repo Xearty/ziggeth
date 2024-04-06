@@ -361,3 +361,19 @@ test "GT instruction false" {
     });
 }
 
+test "EQ instruction true" {
+    try basicValueTest(1, &.{
+        op(.PUSH1), 58,
+        op(.PUSH1), 58,
+        op(.EQ),
+    });
+}
+
+test "EQ instruction false" {
+    try basicValueTest(0, &.{
+        op(.PUSH1), 93,
+        op(.PUSH1), 58,
+        op(.EQ),
+    });
+}
+
