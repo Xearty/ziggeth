@@ -431,3 +431,19 @@ test "SHL instruction shift 8" {
     });
 }
 
+test "SHR instruction shift 8" {
+    try basicValueTest(3, &.{
+        op(.PUSH2), 0x3, 0x0,
+        op(.PUSH1), 8,
+        op(.SHR),
+    });
+}
+
+test "SHR instruction shift 2" {
+    try basicValueTest(64, &.{
+        op(.PUSH2), 0x1, 0x0,
+        op(.PUSH1), 2,
+        op(.SHR),
+    });
+}
+

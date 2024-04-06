@@ -139,6 +139,11 @@ pub fn executeInstruction(ctx: *Context, instruction: *const Instruction) !void 
             const operand2 = ctx.stack.pop();
             try ctx.stack.push(operand2 << @as(u8, @truncate(operand1)));
         },
+        .SHR => {
+            const operand1 = ctx.stack.pop();
+            const operand2 = ctx.stack.pop();
+            try ctx.stack.push(operand2 >> @as(u8, @truncate(operand1)));
+        },
         inline else => |data, tag| {
             if (comptime instructions.isQuantified(tag, "PUSH")) |_| {
                 try ctx.stack.push(data.value);
