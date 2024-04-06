@@ -87,6 +87,12 @@ pub fn executeInstruction(ctx: *Context, instruction: *const Instruction) !void 
             const result = @as(Word, @as(u1, @bitCast(operand1 < operand2)));
             try ctx.stack.push(result);
         },
+        .SGT => {
+            const operand1 = @as(SignedWord, @bitCast(ctx.stack.pop()));
+            const operand2 = @as(SignedWord, @bitCast(ctx.stack.pop()));
+            const result = @as(Word, @as(u1, @bitCast(operand1 > operand2)));
+            try ctx.stack.push(result);
+        },
         inline else => |data, tag| {
             if (comptime instructions.isQuantified(tag, "PUSH")) |_| {
                 try ctx.stack.push(data.value);
