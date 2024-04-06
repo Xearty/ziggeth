@@ -415,3 +415,19 @@ test "BYTE instruction 31th byte" {
     });
 }
 
+test "SHL instruction shift 1" {
+    try basicValueTest(6, &.{
+        op(.PUSH1), 0x3,
+        op(.PUSH1), 1,
+        op(.SHL),
+    });
+}
+
+test "SHL instruction shift 8" {
+    try basicValueTest(768, &.{
+        op(.PUSH1), 0x3,
+        op(.PUSH1), 8,
+        op(.SHL),
+    });
+}
+
