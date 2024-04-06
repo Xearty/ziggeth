@@ -98,6 +98,10 @@ pub fn executeInstruction(ctx: *Context, instruction: *const Instruction) !void 
             const operand2 = ctx.stack.pop();
             try ctx.stack.push(@as(Word, @as(u1, @bitCast(operand1 == operand2))));
         },
+        .ISZERO => {
+            const operand = ctx.stack.pop();
+            try ctx.stack.push(@as(Word, @as(u1, @bitCast(operand == 0))));
+        },
         inline else => |data, tag| {
             if (comptime instructions.isQuantified(tag, "PUSH")) |_| {
                 try ctx.stack.push(data.value);

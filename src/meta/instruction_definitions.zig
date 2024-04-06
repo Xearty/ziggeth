@@ -111,6 +111,12 @@ pub const instruction_definitions = [_]InstructionDefinition{
         .size = 1,
         .payload_type = void,
     },
+    .{
+        .mnemonic = "ISZERO",
+        .opcode = 0x15,
+        .size = 1,
+        .payload_type = void,
+    },
 } ++ genPushInstructionDefinitions()
   ++ genDupInstructionDefinitions()
   ++ genSwapInstructionDefinitions();

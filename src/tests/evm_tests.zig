@@ -377,3 +377,17 @@ test "EQ instruction false" {
     });
 }
 
+test "ISZERO instruction true" {
+    try basicValueTest(0, &.{
+        op(.PUSH1), 0x69,
+        op(.ISZERO),
+    });
+}
+
+test "ISZERO instruction false" {
+    try basicValueTest(1, &.{
+        op(.PUSH1), 0x0,
+        op(.ISZERO),
+    });
+}
+
