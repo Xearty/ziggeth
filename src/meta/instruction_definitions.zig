@@ -101,41 +101,38 @@ fn genPushInstructionDefinitions() [32]InstructionDefinition {
     const PushInstructionType = struct { value: Word };
     var definitions: [32]InstructionDefinition = undefined;
 
-    inline for (0..definitions.len) |index| {
-        definitions[index] = InstructionDefinition{
-            .mnemonic = std.fmt.comptimePrint("PUSH{}", .{index + 1}),
-            .opcode = 0x60 + index,
-            .size = index + 2,
-            .payload_type = PushInstructionType,
-        };
-    }
-    return definitions;
+    inline for (&definitions, 0..) |*def, index| def.* = .{
+        .mnemonic = std.fmt.comptimePrint("PUSH{}", .{index + 1}),
+        .opcode = 0x60 + index,
+        .size = index + 2,
+        .payload_type = PushInstructionType,
+    };
+
+    comptime return definitions;
 }
 
 fn genDupInstructionDefinitions() [16]InstructionDefinition {
     var definitions: [16]InstructionDefinition = undefined;
 
-    inline for (0..definitions.len) |index| {
-        definitions[index] = InstructionDefinition{
-            .mnemonic = std.fmt.comptimePrint("DUP{}", .{index + 1}),
-            .opcode = 0x80 + index,
-            .size = 1,
-            .payload_type = void,
-        };
-    }
-    return definitions;
+    inline for (&definitions, 0..) |*def, index| def.* = .{
+        .mnemonic = std.fmt.comptimePrint("DUP{}", .{index + 1}),
+        .opcode = 0x80 + index,
+        .size = 1,
+        .payload_type = void,
+    };
+
+    comptime return definitions;
 }
 
 fn genSwapInstructionDefinitions() [16]InstructionDefinition {
     var definitions: [16]InstructionDefinition = undefined;
 
-    inline for (0..definitions.len) |index| {
-        definitions[index] = InstructionDefinition{
-            .mnemonic = std.fmt.comptimePrint("SWAP{}", .{index + 1}),
-            .opcode = 0x90 + index,
-            .size = 1,
-            .payload_type = void,
-        };
-    }
-    return definitions;
+    inline for (&definitions, 0..) |*def, index| def.* = .{
+        .mnemonic = std.fmt.comptimePrint("SWAP{}", .{index + 1}),
+        .opcode = 0x90 + index,
+        .size = 1,
+        .payload_type = void,
+    };
+
+    comptime return definitions;
 }
