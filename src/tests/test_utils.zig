@@ -12,5 +12,5 @@ pub fn basicValueTest(expected_value: Word, bytecode: []const u8) !void {
     defer evm_context.deinit();
 
     try evm.execute(&evm_context);
-    try std.testing.expect(evm_context.stack.peek() == expected_value);
+    try std.testing.expectEqual(expected_value, evm_context.stack.peek());
 }
