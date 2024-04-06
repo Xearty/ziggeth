@@ -85,6 +85,18 @@ pub fn printBoxed(title: []const u8, message: []const u8) void {
     print("╯\n", .{});
 }
 
+pub fn getNumberLength(comptime T: type, number: T) u32 {
+    if (number == 0) return 1;
+    var num: T = number;
+    var length: u32 = 0;
+
+    while (num != 0) {
+        length += 1;
+        num /= 10;
+    }
+    return length;
+}
+
 pub fn toLower(comptime string: []const u8) []const u8 {
     comptime {
         var buf: [string.len]u8 = undefined;

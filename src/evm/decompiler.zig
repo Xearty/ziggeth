@@ -4,15 +4,24 @@ const Allocator = std.mem.Allocator;
 const evm = @import("root").Context;
 const instructions = @import("evm_instructions");
 const opcodes = instructions.opcodes;
+const utils = @import("evm_utils");
 
 
 pub fn decompile(allocator: Allocator, bytecode: []const u8) ![]u8 {
     var buffer: [1024]u8 = undefined;
     var decompiled_bytecode = ArrayList(u8).init(allocator);
 
+    const number_column_len = utils.getNumberLength(usize, bytecode.len);
+
     var counter: usize = 0;
     while (counter < bytecode.len) {
+        const opcode_offset = try std.fmt.bufPrint(&buffer, "{}: ", .{counter});
+        try decompiled_bytecode.appendSlice(opcode_offset);
+
         const opcode = opcodes.fromByte(bytecode[counter]);
+        const counter_len = utils.getNumberLength(usize, counter);
+        for (counter_len..number_column_len) |_| try decompiled_bytecode.append(' ');
+
         try decompiled_bytecode.appendSlice(@tagName(opcode));
 
         const args_offset = counter + 1;
