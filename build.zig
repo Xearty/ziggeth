@@ -49,6 +49,7 @@ pub fn build(b: *std.Build) void {
     exe.root_module.addImport("math", math_module);
     exe.root_module.addImport("evm", evm_module);
     exe.root_module.addImport("constants", constants_module);
+    exe.root_module.addImport("evm_utils", utils_module);
 
     evm_module.addImport("constants", constants_module);
 
