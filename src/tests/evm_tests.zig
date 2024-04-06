@@ -544,3 +544,13 @@ test "JUMPI instruction true" {
         op(.ADD),
     });
 }
+
+test "SSLOAD/SSTORE instructions" {
+    try basicValueTest(69, &.{
+        op(.PUSH1), 69,  // value
+        op(.PUSH1), 0x5, // key
+        op(.SSTORE),
+        op(.PUSH1), 0x5, // key
+        op(.SLOAD),
+    });
+}

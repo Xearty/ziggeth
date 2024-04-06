@@ -5,12 +5,13 @@ const Allocator = std.mem.Allocator;
 pub fn Stack(comptime T: type) type {
     return struct {
         const Self = @This();
+        const InnerType = ArrayList(T);
 
-        inner: ArrayList(T),
+        inner: InnerType,
 
         pub fn init(allocator: Allocator) Self {
             return Self {
-                .inner = ArrayList(T).init(allocator),
+                .inner = InnerType.init(allocator),
             };
         }
 

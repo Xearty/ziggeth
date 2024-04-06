@@ -2,21 +2,26 @@ const std = @import("std");
 const Allocator = std.mem.Allocator;
 const Word = @import("constants").Word;
 const Stack = @import("stack.zig").Stack;
+const Storage = @import("storage.zig").Storage;
 
 pub const Context = struct {
+    const Self = @This();
+    const StackType = Stack(Word);
+    const StorageType = Storage(Word, Word);
+
     program_counter: usize,
     bytecode: []const u8,
-    stack: Stack(Word),
+    stack: StackType,
+    storage: StorageType,
     status: VMStatus,
     allocator: Allocator,
-
-    const Self = @This();
 
     pub fn init(allocator: Allocator, bytecode: []const u8) Self {
         return .{
             .program_counter = 0,
             .bytecode = bytecode,
-            .stack = Stack(Word).init(allocator),
+            .stack = StackType.init(allocator),
+            .storage = StorageType.init(allocator),
             .status = .RUNNING,
             .allocator = allocator,
         };
@@ -24,6 +29,7 @@ pub const Context = struct {
 
     pub fn deinit(self: *Self) void {
         self.stack.deinit();
+        self.storage.deinit();
     }
 
     pub fn advanceProgramCounter(self: *Self, leap: usize) void {

@@ -1,3 +1,4 @@
+const std = @import("std");
 const utils = @import("utils.zig");
 const instructions = @import("instructions.zig");
 const constants = @import("constants");
@@ -151,6 +152,22 @@ pub fn executeInstruction(ctx: *Context, instruction: *const Instruction) !void 
             try ctx.stack.push(@as(Word, @bitCast(result)));
         },
         .POP => _ = ctx.stack.pop(),
+        .SLOAD => {
+            const key = ctx.stack.pop();
+            const maybe_value = ctx.storage.load(key);
+            if (maybe_value) |value| {
+                try ctx.stack.push(value);
+            } else {
+                const message = try std.fmt.allocPrint(ctx.allocator, "Key {} doesn't exist in storage", .{key});
+                defer ctx.allocator.free(message);
+                @panic(message);
+            }
+        },
+        .SSTORE => {
+            const key = ctx.stack.pop();
+            const value = @as(Word, @bitCast(ctx.stack.pop()));
+            try ctx.storage.store(key, value);
+        },
         .JUMP => ctx.program_counter = @as(usize, @truncate(ctx.stack.pop())),
         .JUMPI => {
             const destination = ctx.stack.pop();
