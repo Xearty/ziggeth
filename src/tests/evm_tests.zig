@@ -494,3 +494,11 @@ test "SAR instruction shift 3 with sign extension" {
         op(.SAR),
     });
 }
+
+test "POP instruction" {
+    try basicValueTest(1, &.{
+        op(.PUSH1), 0x01,
+        op(.PUSH1), 0x02,
+        op(.POP),
+    });
+}

@@ -150,6 +150,7 @@ pub fn executeInstruction(ctx: *Context, instruction: *const Instruction) !void 
             const result = operand2 >> @as(u8, @truncate(operand1));
             try ctx.stack.push(@as(Word, @bitCast(result)));
         },
+        .POP => _ = ctx.stack.pop(),
         inline else => |data, tag| {
             if (comptime instructions.isQuantified(tag, "PUSH")) |_| {
                 try ctx.stack.push(data.value);
