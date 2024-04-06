@@ -391,3 +391,27 @@ test "ISZERO instruction false" {
     });
 }
 
+test "BYTE instruction 29th byte" {
+    try basicValueTest(1, &.{
+        op(.PUSH3), 0x1, 0x2, 0x3,
+        op(.PUSH1), 29,
+        op(.BYTE),
+    });
+}
+
+test "BYTE instruction 30th byte" {
+    try basicValueTest(2, &.{
+        op(.PUSH3), 0x1, 0x2, 0x3,
+        op(.PUSH1), 30,
+        op(.BYTE),
+    });
+}
+
+test "BYTE instruction 31th byte" {
+    try basicValueTest(3, &.{
+        op(.PUSH3), 0x1, 0x2, 0x3,
+        op(.PUSH1), 31,
+        op(.BYTE),
+    });
+}
+

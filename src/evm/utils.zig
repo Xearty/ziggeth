@@ -33,3 +33,7 @@ pub fn printBits(value: Word) void {
     }
     std.debug.print("\n", .{});
 }
+
+pub fn extractIthByte(comptime T: type, value: T, i: T) T {
+    return (value >> (248 - @as(u8, @truncate(i)) * 8)) & 0xff;
+}
