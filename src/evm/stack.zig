@@ -1,7 +1,7 @@
 const std = @import("std");
 const ArrayList = std.ArrayList;
 const Allocator = std.mem.Allocator;
-const printBoxed = @import("utils.zig").printBoxed;
+const printBoxed = @import("evm_utils").printBoxed;
 
 pub fn Stack(comptime T: type) type {
     return struct {
@@ -43,7 +43,6 @@ pub fn Stack(comptime T: type) type {
             const swapped = self.inner.swapRemove(length - offset - 1);
             try self.inner.append(swapped);
         }
-
 
         pub fn prettyPrint(self: *const Self) !void {
             var buffer: [1024]u8 = undefined;

@@ -1,196 +1,32 @@
 const std = @import("std");
-const utils = @import("utils.zig");
-const instructions = @import("instructions.zig");
+const utils = @import("evm_utils");
+const instructions = @import("evm_instructions");
+const opcodes = instructions.opcodes;
 const constants = @import("constants");
 const math = @import("math");
 const Context = @import("context.zig").Context;
-const Instruction = instructions.Instruction;
 const Word = constants.Word;
 const SignedWord = constants.SignedWord;
 
 pub fn execute(ctx: *Context) !void {
     while (ctx.status == .RUNNING) {
-        const instruction = try instructions.decode(ctx.bytecode[ctx.program_counter..]);
-        ctx.advanceProgramCounter(instructions.getSize(instruction));
-        try executeInstruction(ctx, &instruction);
+        const opcode = opcodes.fromByte(ctx.bytecode[ctx.program_counter]);
+        ctx.advanceProgramCounter(instructions.getSize(opcode));
+        try executeInstruction(ctx, opcode);
     }
 }
 
-pub fn executeInstruction(ctx: *Context, instruction: *const Instruction) !void {
-    switch (instruction.*) {
-        .STOP => ctx.status = .HALTED,
-        .ADD => {
-            const operand1 = ctx.stack.pop();
-            const operand2 = ctx.stack.pop();
-            try ctx.stack.push(operand1 +% operand2);
-        },
-        .MUL => {
-            const operand1 = ctx.stack.pop();
-            const operand2 = ctx.stack.pop();
-            try ctx.stack.push(operand1 *% operand2);
-        },
-        .SUB => {
-            const operand1 = ctx.stack.pop();
-            const operand2 = ctx.stack.pop();
-            try ctx.stack.push(operand1 -% operand2);
-        },
-        .DIV => {
-            const operand1 = ctx.stack.pop();
-            const operand2 = ctx.stack.pop();
-            try ctx.stack.push(operand1 / operand2);
-        },
-        .SDIV => {
-            const operand1 = @as(SignedWord, @bitCast(ctx.stack.pop()));
-            const operand2 = @as(SignedWord, @bitCast(ctx.stack.pop()));
-            const result = @divTrunc(operand1, operand2);
-            try ctx.stack.push(@as(Word, @bitCast(result)));
-        },
-        .MOD => {
-            const operand1 = ctx.stack.pop();
-            const operand2 = ctx.stack.pop();
-            try ctx.stack.push(operand1 % operand2);
-        },
-        .SMOD => {
-            const operand1 = @as(SignedWord, @bitCast(ctx.stack.pop()));
-            const operand2 = @as(SignedWord, @bitCast(ctx.stack.pop()));
-            const result = @mod(operand1, operand2);
-            try ctx.stack.push(@as(Word, @bitCast(result)));
-        },
-        .ADDMOD => {
-            const operand1 = ctx.stack.pop();
-            const operand2 = ctx.stack.pop();
-            const operand3 = ctx.stack.pop();
-            const result = (operand1 +% operand2) % operand3;
-            try ctx.stack.push(result);
-        },
-        .MULMOD => {
-            const operand1 = ctx.stack.pop();
-            const operand2 = ctx.stack.pop();
-            const operand3 = ctx.stack.pop();
-            const result = (operand1 *% operand2) % operand3;
-            try ctx.stack.push(result);
-        },
-        .EXP => {
-            const operand1 = ctx.stack.pop();
-            const operand2 = ctx.stack.pop();
-            try ctx.stack.push(math.pow(Word, operand1, operand2));
-        },
-        .SIGNEXTEND => {
-            const operand1 = ctx.stack.pop();
-            const operand2 = ctx.stack.pop();
-            try ctx.stack.push(utils.signExtend(operand2, operand1));
-        },
-        .LT => {
-            const operand1 = ctx.stack.pop();
-            const operand2 = ctx.stack.pop();
-            try ctx.stack.push(@as(Word, @as(u1, @bitCast(operand1 < operand2))));
-        },
-        .GT => {
-            const operand1 = ctx.stack.pop();
-            const operand2 = ctx.stack.pop();
-            try ctx.stack.push(@as(Word, @as(u1, @bitCast(operand1 > operand2))));
-        },
-        .SLT => {
-            const operand1 = @as(SignedWord, @bitCast(ctx.stack.pop()));
-            const operand2 = @as(SignedWord, @bitCast(ctx.stack.pop()));
-            const result = @as(Word, @as(u1, @bitCast(operand1 < operand2)));
-            try ctx.stack.push(result);
-        },
-        .SGT => {
-            const operand1 = @as(SignedWord, @bitCast(ctx.stack.pop()));
-            const operand2 = @as(SignedWord, @bitCast(ctx.stack.pop()));
-            const result = @as(Word, @as(u1, @bitCast(operand1 > operand2)));
-            try ctx.stack.push(result);
-        },
-        .EQ => {
-            const operand1 = ctx.stack.pop();
-            const operand2 = ctx.stack.pop();
-            try ctx.stack.push(@as(Word, @as(u1, @bitCast(operand1 == operand2))));
-        },
-        .ISZERO => {
-            const operand = ctx.stack.pop();
-            try ctx.stack.push(@as(Word, @as(u1, @bitCast(operand == 0))));
-        },
-        .AND => {
-            const operand1 = ctx.stack.pop();
-            const operand2 = ctx.stack.pop();
-            try ctx.stack.push(operand1 & operand2);
-        },
-        .OR => {
-            const operand1 = ctx.stack.pop();
-            const operand2 = ctx.stack.pop();
-            try ctx.stack.push(operand1 | operand2);
-        },
-        .XOR => {
-            const operand1 = ctx.stack.pop();
-            const operand2 = ctx.stack.pop();
-            try ctx.stack.push(operand1 ^ operand2);
-        },
-        .NOT => {
-            const operand = ctx.stack.pop();
-            try ctx.stack.push(~operand);
-        },
-        .BYTE => {
-            const operand1 = ctx.stack.pop();
-            const operand2 = ctx.stack.pop();
-            try ctx.stack.push(utils.extractIthByte(Word, operand2, operand1));
-        },
-        .SHL => {
-            const operand1 = ctx.stack.pop();
-            const operand2 = ctx.stack.pop();
-            try ctx.stack.push(operand2 << @as(u8, @truncate(operand1)));
-        },
-        .SHR => {
-            const operand1 = ctx.stack.pop();
-            const operand2 = ctx.stack.pop();
-            try ctx.stack.push(operand2 >> @as(u8, @truncate(operand1)));
-        },
-        .SAR => {
-            const operand1 = ctx.stack.pop();
-            const operand2 = @as(SignedWord, @bitCast(ctx.stack.pop()));
-            const result = operand2 >> @as(u8, @truncate(operand1));
-            try ctx.stack.push(@as(Word, @bitCast(result)));
-        },
-        .POP => _ = ctx.stack.pop(),
-        .SLOAD => {
-            const key = ctx.stack.pop();
-            const maybe_value = ctx.storage.load(key);
-            if (maybe_value) |value| {
-                try ctx.stack.push(value);
+fn executeInstruction(ctx: *Context, opcode: opcodes.Opcode) !void {
+    @setEvalBranchQuota(10000);
+    switch (opcode) {
+        inline else => |tag| {
+            if (comptime instructions.isQuantified(tag)) |unquantified_tag| {
+                const quantity = comptime instructions.extractQuantity(tag);
+                try @field(instructions, utils.toLower(unquantified_tag))(ctx, quantity);
             } else {
-                const message = try std.fmt.allocPrint(ctx.allocator, "Key {} doesn't exist in storage", .{key});
-                defer ctx.allocator.free(message);
-                @panic(message);
+                const function = comptime utils.toLower(@tagName(tag));
+                try @field(instructions, function)(ctx);
             }
-        },
-        .SSTORE => {
-            const key = ctx.stack.pop();
-            const value = @as(Word, @bitCast(ctx.stack.pop()));
-            try ctx.storage.store(key, value);
-        },
-        .JUMP => ctx.program_counter = @as(usize, @truncate(ctx.stack.pop())),
-        .JUMPI => {
-            const destination = ctx.stack.pop();
-            const condition = ctx.stack.pop();
-            if (condition != 0) {
-                ctx.program_counter = @as(usize, @truncate(destination));
-            }
-        },
-        .PC => {
-            // Program counter is advanced before executing the instruction
-            try ctx.stack.push(ctx.program_counter - 1);
-        },
-        inline else => |data, tag| {
-            if (comptime instructions.isQuantified(tag, "PUSH")) |_| {
-                try ctx.stack.push(data.value);
-            } else if (comptime instructions.isQuantified(tag, "DUP")) |offset| {
-                try ctx.stack.dup(offset);
-            } else if (comptime instructions.isQuantified(tag, "SWAP")) |offset| {
-                try ctx.stack.swap(offset);
-            } else {
-                @compileError("Unhandled opcode " ++ @tagName(tag));
-            }
-        },
+        }
     }
 }
-

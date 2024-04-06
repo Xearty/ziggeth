@@ -1,7 +1,7 @@
 const std = @import("std");
 const AutoHashMap = std.AutoHashMap;
 const Allocator = std.mem.Allocator;
-const printBoxed = @import("utils.zig").printBoxed;
+const printBoxed = @import("evm_utils").printBoxed;
 
 pub fn Storage(comptime K: type, comptime V: type) type {
     return struct {

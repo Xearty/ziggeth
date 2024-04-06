@@ -30,24 +30,34 @@ pub fn build(b: *std.Build) void {
         .root_source_file = .{ .path = "src/evm/root.zig" },
     });
 
-    const meta_module = b.createModule(.{
-        .root_source_file = .{ .path = "src/meta/root.zig" },
-    });
-
     const constants_module = b.createModule(.{
         .root_source_file = .{ .path = "src/constants/root.zig" },
     });
 
+    const instructions_module = b.createModule(.{
+        .root_source_file = .{ .path = "src/evm/instructions/root.zig" },
+    });
+
+    const utils_module = b.createModule(.{
+        .root_source_file = .{ .path = "src/evm/utils/root.zig" },
+    });
+
     evm_module.addImport("math", math_module);
+    evm_module.addImport("evm_instructions", instructions_module);
+    evm_module.addImport("evm_utils", utils_module);
 
     exe.root_module.addImport("math", math_module);
     exe.root_module.addImport("evm", evm_module);
     exe.root_module.addImport("constants", constants_module);
 
-    evm_module.addImport("meta", meta_module);
     evm_module.addImport("constants", constants_module);
 
-    meta_module.addImport("constants", constants_module);
+    instructions_module.addImport("evm", evm_module);
+    instructions_module.addImport("evm_utils", utils_module);
+    instructions_module.addImport("constants", constants_module);
+    instructions_module.addImport("math", math_module);
+
+    utils_module.addImport("constants", constants_module);
 
     // This declares intent for the executable to be installed into the
     // standard location when the user invokes the "install" step (the default

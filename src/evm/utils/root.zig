@@ -83,6 +83,12 @@ pub fn printBoxed(title: []const u8, message: []const u8) void {
         print("─", .{});
     }
     print("╯\n", .{});
+}
 
+pub fn toLower(comptime string: []const u8) []const u8 {
+    comptime {
+        var buf: [string.len]u8 = undefined;
+        return std.ascii.lowerString(&buf, string);
+    }
 }
 
