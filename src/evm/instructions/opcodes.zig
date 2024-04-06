@@ -6,7 +6,7 @@ pub const Opcode = DefineOpcodes();
 pub fn fromByte(byte: u8) Opcode {
     if (!isValidOpcode(byte)) {
         const allocator = std.heap.page_allocator;
-        const message = std.fmt.allocPrint(allocator, "Opcode {} is unimplemented", .{byte}) catch unreachable;
+        const message = std.fmt.allocPrint(allocator, "Opcode 0x{x} is unimplemented", .{byte}) catch unreachable;
         defer allocator.free(message);
         @panic(message);
     }
