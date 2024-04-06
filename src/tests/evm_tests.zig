@@ -509,3 +509,14 @@ test "PC instruction" {
         op(.PC),
     });
 }
+
+test "JUMP instruction" {
+    try basicValueTest(4, &.{
+        op(.PUSH1), 0x01,
+        op(.PUSH1), 7,
+        op(.JUMP),
+        op(.PUSH1), 0x02, // this push is skipped
+        op(.PUSH1), 0x03,
+        op(.ADD),
+    });
+}

@@ -172,6 +172,12 @@ pub const instruction_definitions = [_]InstructionDefinition{
         .payload_type = void,
     },
     .{
+        .mnemonic = "JUMP",
+        .opcode = 0x56,
+        .size = 1,
+        .payload_type = void,
+    },
+    .{
         .mnemonic = "PC",
         .opcode = 0x58,
         .size = 1,

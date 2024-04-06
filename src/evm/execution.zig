@@ -151,6 +151,7 @@ pub fn executeInstruction(ctx: *Context, instruction: *const Instruction) !void 
             try ctx.stack.push(@as(Word, @bitCast(result)));
         },
         .POP => _ = ctx.stack.pop(),
+        .JUMP => ctx.program_counter = @as(usize, @truncate(ctx.stack.pop())),
         .PC => {
             // Program counter is advanced before executing the instruction
             try ctx.stack.push(ctx.program_counter - 1);
