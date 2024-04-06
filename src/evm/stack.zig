@@ -1,6 +1,7 @@
 const std = @import("std");
 const ArrayList = std.ArrayList;
 const Allocator = std.mem.Allocator;
+const printBoxed = @import("utils.zig").printBoxed;
 
 pub fn Stack(comptime T: type) type {
     return struct {
@@ -41,6 +42,22 @@ pub fn Stack(comptime T: type) type {
             const length = self.inner.items.len;
             const swapped = self.inner.swapRemove(length - offset - 1);
             try self.inner.append(swapped);
+        }
+
+
+        pub fn prettyPrint(self: *const Self) !void {
+            var buffer: [1024]u8 = undefined;
+            const format = "{}";
+            var message = std.ArrayList(u8).init(self.inner.allocator);
+
+            for (self.inner.items) |item| {
+                const line = try std.fmt.bufPrint(&buffer, format, .{item});
+                try message.appendSlice(line);
+                try message.append('\n');
+            }
+
+            _ = message.popOrNull();
+            printBoxed("Stack", message.items);
         }
     };
 }

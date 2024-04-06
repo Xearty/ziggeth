@@ -38,6 +38,11 @@ pub const Context = struct {
             self.status = .HALTED;
         }
     }
+
+    pub fn prettyPrint(self: *const Self) !void {
+        try self.storage.prettyPrint();
+        try self.stack.prettyPrint();
+    }
 };
 
 pub const VMStatus = enum {

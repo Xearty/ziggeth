@@ -1,6 +1,7 @@
 const std = @import("std");
 const AutoHashMap = std.AutoHashMap;
 const Allocator = std.mem.Allocator;
+const printBoxed = @import("utils.zig").printBoxed;
 
 pub fn Storage(comptime K: type, comptime V: type) type {
     return struct {
@@ -26,5 +27,24 @@ pub fn Storage(comptime K: type, comptime V: type) type {
         pub fn load(self: *Self, key: K) ?V {
             return self.inner.get(key);
         }
+
+        pub fn prettyPrint(self: *const Self) !void {
+            var buffer: [1024]u8 = undefined;
+            const format = "{} = {}";
+            var message = std.ArrayList(u8).init(self.inner.allocator);
+
+            var iter = self.inner.iterator();
+            while (iter.next()) |pair| {
+                const key = pair.key_ptr.*;
+                const value = pair.value_ptr.*;
+                const line = try std.fmt.bufPrint(&buffer, format, .{key, value});
+                try message.appendSlice(line);
+                try message.append('\n');
+            }
+
+            _ = message.popOrNull();
+            printBoxed("Storage", message.items);
+        }
     };
 }
+

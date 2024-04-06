@@ -1,4 +1,5 @@
 const std = @import("std");
+const print = std.debug.print;
 const Word = @import("constants").Word;
 
 pub fn wordFromBigEndianBytes(bytes: []const u8) Word {
@@ -37,3 +38,51 @@ pub fn printBits(value: Word) void {
 pub fn extractIthByte(comptime T: type, value: T, i: T) T {
     return (value >> (248 - @as(u8, @truncate(i)) * 8)) & 0xff;
 }
+
+fn determineLongestLine(str: []const u8) usize {
+    var longest_line_len: usize = 0;
+
+    var lines = std.mem.split(u8, str, "\n");
+    while (lines.next()) |line| {
+        longest_line_len = @max(longest_line_len, line.len);
+    }
+
+    return longest_line_len;
+}
+
+// TODO: maybe add a padding parameter
+pub fn printBoxed(title: []const u8, message: []const u8) void {
+    const longest_line = @max(determineLongestLine(message), title.len);
+    const box_width = longest_line + 2;
+
+    print("╭", .{});
+    for (0..box_width - 2) |_| {
+        print("─", .{});
+    }
+    print("╮\n", .{});
+
+    print("│{s}", .{title});
+    for (title.len..longest_line) |_| print(" ", .{});
+    print("│\n", .{});
+
+    print("├", .{});
+    for (0..box_width-2) |_| print("─", .{});
+    print("┤\n", .{});
+
+    var lines = std.mem.split(u8, message, "\n");
+    while (lines.next()) |line| {
+        print("│", .{});
+        print("{s}", .{line});
+        for (line.len..longest_line) |_| print(" ", .{});
+        print("│\n", .{});
+
+    }
+
+    print("╰", .{});
+    for (0..box_width - 2) |_| {
+        print("─", .{});
+    }
+    print("╯\n", .{});
+
+}
+
