@@ -144,6 +144,12 @@ pub fn executeInstruction(ctx: *Context, instruction: *const Instruction) !void 
             const operand2 = ctx.stack.pop();
             try ctx.stack.push(operand2 >> @as(u8, @truncate(operand1)));
         },
+        .SAR => {
+            const operand1 = ctx.stack.pop();
+            const operand2 = @as(SignedWord, @bitCast(ctx.stack.pop()));
+            const result = operand2 >> @as(u8, @truncate(operand1));
+            try ctx.stack.push(@as(Word, @bitCast(result)));
+        },
         inline else => |data, tag| {
             if (comptime instructions.isQuantified(tag, "PUSH")) |_| {
                 try ctx.stack.push(data.value);
