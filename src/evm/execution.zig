@@ -125,6 +125,10 @@ pub fn executeInstruction(ctx: *Context, instruction: *const Instruction) !void 
             const operand2 = ctx.stack.pop();
             try ctx.stack.push(operand1 ^ operand2);
         },
+        .NOT => {
+            const operand = ctx.stack.pop();
+            try ctx.stack.push(~operand);
+        },
         inline else => |data, tag| {
             if (comptime instructions.isQuantified(tag, "PUSH")) |_| {
                 try ctx.stack.push(data.value);

@@ -135,6 +135,12 @@ pub const instruction_definitions = [_]InstructionDefinition{
         .size = 1,
         .payload_type = void,
     },
+    .{
+        .mnemonic = "NOT",
+        .opcode = 0x19,
+        .size = 1,
+        .payload_type = void,
+    },
 } ++ genPushInstructionDefinitions()
   ++ genDupInstructionDefinitions()
   ++ genSwapInstructionDefinitions();
