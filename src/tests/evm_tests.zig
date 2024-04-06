@@ -502,3 +502,10 @@ test "POP instruction" {
         op(.POP),
     });
 }
+
+test "PC instruction" {
+    try basicValueTest(2, &.{
+        op(.PUSH1), 0x69,
+        op(.PC),
+    });
+}

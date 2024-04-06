@@ -151,6 +151,10 @@ pub fn executeInstruction(ctx: *Context, instruction: *const Instruction) !void 
             try ctx.stack.push(@as(Word, @bitCast(result)));
         },
         .POP => _ = ctx.stack.pop(),
+        .PC => {
+            // Program counter is advanced before executing the instruction
+            try ctx.stack.push(ctx.program_counter - 1);
+        },
         inline else => |data, tag| {
             if (comptime instructions.isQuantified(tag, "PUSH")) |_| {
                 try ctx.stack.push(data.value);
