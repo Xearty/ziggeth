@@ -520,3 +520,27 @@ test "JUMP instruction" {
         op(.ADD),
     });
 }
+
+test "JUMPI instruction false" {
+    try basicValueTest(5, &.{
+        op(.PUSH1), 0x01,
+        op(.PUSH1), 0, // condition
+        op(.PUSH1), 9, // destrination
+        op(.JUMPI),
+        op(.PUSH1), 0x02, // this push is skipped
+        op(.PUSH1), 0x03,
+        op(.ADD),
+    });
+}
+
+test "JUMPI instruction true" {
+    try basicValueTest(4, &.{
+        op(.PUSH1), 0x01,
+        op(.PUSH1), 1, // condition
+        op(.PUSH1), 9, // destrination
+        op(.JUMPI),
+        op(.PUSH1), 0x02, // this push is skipped
+        op(.PUSH1), 0x03,
+        op(.ADD),
+    });
+}

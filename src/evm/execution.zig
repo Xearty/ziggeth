@@ -152,6 +152,13 @@ pub fn executeInstruction(ctx: *Context, instruction: *const Instruction) !void 
         },
         .POP => _ = ctx.stack.pop(),
         .JUMP => ctx.program_counter = @as(usize, @truncate(ctx.stack.pop())),
+        .JUMPI => {
+            const destination = ctx.stack.pop();
+            const condition = ctx.stack.pop();
+            if (condition != 0) {
+                ctx.program_counter = @as(usize, @truncate(destination));
+            }
+        },
         .PC => {
             // Program counter is advanced before executing the instruction
             try ctx.stack.push(ctx.program_counter - 1);
