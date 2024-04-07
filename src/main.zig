@@ -23,11 +23,11 @@ pub fn main() !void {
         @intFromEnum(evm.Opcode.SSTORE),
     };
 
-    var evm_context = evm.Context.init(allocator, bytecode);
-    defer evm_context.deinit();
+    var evm_interp = evm.Interpreter.init(allocator, bytecode);
+    defer evm_interp.deinit();
 
-    try evm.execute(&evm_context);
-    try evm_context.prettyPrint();
+    try evm.execute(&evm_interp);
+    try evm_interp.prettyPrint();
 
     const decompiled_bytecode = try evm.decompile(allocator, bytecode);
     defer allocator.free(decompiled_bytecode);

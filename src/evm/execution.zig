@@ -4,28 +4,28 @@ const instructions = @import("evm_instructions");
 const opcodes = instructions.opcodes;
 const constants = @import("constants");
 const math = @import("math");
-const Context = @import("context.zig").Context;
+const Interpreter = @import("interpreter.zig").Interpreter;
 const Word = constants.Word;
 const SignedWord = constants.SignedWord;
 
-pub fn execute(ctx: *Context) !void {
-    while (ctx.status == .RUNNING) {
-        const opcode = opcodes.fromByte(ctx.bytecode[ctx.program_counter]);
-        ctx.advanceProgramCounter(instructions.getSize(opcode));
-        try executeInstruction(ctx, opcode);
+pub fn execute(interp: *Interpreter) !void {
+    while (interp.status == .RUNNING) {
+        const opcode = opcodes.fromByte(interp.bytecode[interp.program_counter]);
+        interp.advanceProgramCounter(instructions.getSize(opcode));
+        try executeInstruction(interp, opcode);
     }
 }
 
-fn executeInstruction(ctx: *Context, opcode: opcodes.Opcode) !void {
+fn executeInstruction(interp: *Interpreter, opcode: opcodes.Opcode) !void {
     @setEvalBranchQuota(10000);
     switch (opcode) {
         inline else => |tag| {
             if (comptime instructions.isQuantified(tag)) |unquantified_tag| {
                 const quantity = comptime instructions.extractQuantity(tag);
-                try @field(instructions, utils.toLower(unquantified_tag))(ctx, quantity);
+                try @field(instructions, utils.toLower(unquantified_tag))(interp, quantity);
             } else {
                 const function = comptime utils.toLower(@tagName(tag));
-                try @field(instructions, function)(ctx);
+                try @field(instructions, function)(interp);
             }
         }
     }

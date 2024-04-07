@@ -1,23 +1,23 @@
 const std = @import("std");
 const evm = @import("evm");
-const Context = evm.Context;
+const Interpreter = evm.Interpreter;
 const constants = @import("constants");
 const Word = constants.Word;
 
-pub inline fn sload(ctx: *Context) !void {
-    const key = ctx.stack.pop();
-    const maybe_value = ctx.storage.load(key);
+pub inline fn sload(interp: *Interpreter) !void {
+    const key = interp.stack.pop();
+    const maybe_value = interp.storage.load(key);
     if (maybe_value) |value| {
-        try ctx.stack.push(value);
+        try interp.stack.push(value);
     } else {
-        const message = try std.fmt.allocPrint(ctx.allocator, "Key {} doesn't exist in storage", .{key});
-        defer ctx.allocator.free(message);
+        const message = try std.fmt.allocPrint(interp.allocator, "Key {} doesn't exist in storage", .{key});
+        defer interp.allocator.free(message);
         @panic(message);
     }
 }
 
-pub inline fn sstore(ctx: *Context) !void {
-    const key = ctx.stack.pop();
-    const value = @as(Word, @bitCast(ctx.stack.pop()));
-    try ctx.storage.store(key, value);
+pub inline fn sstore(interp: *Interpreter) !void {
+    const key = interp.stack.pop();
+    const value = @as(Word, @bitCast(interp.stack.pop()));
+    try interp.storage.store(key, value);
 }

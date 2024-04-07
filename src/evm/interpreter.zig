@@ -4,7 +4,7 @@ const Word = @import("constants").Word;
 const Stack = @import("stack.zig").Stack;
 const Storage = @import("storage.zig").Storage;
 
-pub const Context = struct {
+pub const Interpreter = struct {
     const Self = @This();
     const StackType = Stack(Word);
     const StorageType = Storage(Word, Word);

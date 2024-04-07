@@ -1,21 +1,21 @@
 const evm = @import("evm");
-const Context = evm.Context;
+const Interpreter = evm.Interpreter;
 const utils = @import("evm_utils");
 
-pub inline fn pop(ctx: *Context) !void {
-    _ = ctx.stack.pop();
+pub inline fn pop(interp: *Interpreter) !void {
+    _ = interp.stack.pop();
 }
 
-pub inline fn push(ctx: *Context, count: u32) !void {
-    const bytes = ctx.bytecode[ctx.program_counter-count..ctx.program_counter];
+pub inline fn push(interp: *Interpreter, count: u32) !void {
+    const bytes = interp.bytecode[interp.program_counter-count..interp.program_counter];
     const value = utils.wordFromBigEndianBytes(bytes);
-    try ctx.stack.push(value);
+    try interp.stack.push(value);
 }
 
-pub inline fn dup(ctx: *Context, offset: u32) !void {
-    try ctx.stack.dup(offset);
+pub inline fn dup(interp: *Interpreter, offset: u32) !void {
+    try interp.stack.dup(offset);
 }
 
-pub inline fn swap(ctx: *Context, offset: u32) !void {
-    try ctx.stack.swap(offset);
+pub inline fn swap(interp: *Interpreter, offset: u32) !void {
+    try interp.stack.swap(offset);
 }

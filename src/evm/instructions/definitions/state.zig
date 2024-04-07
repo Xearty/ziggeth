@@ -1,23 +1,23 @@
 const evm = @import("evm");
-const Context = evm.Context;
+const Interpreter = evm.Interpreter;
 
-pub inline fn stop(ctx: *Context) !void {
-    ctx.status = .HALTED;
+pub inline fn stop(interp: *Interpreter) !void {
+    interp.status = .HALTED;
 }
 
-pub inline fn jump(ctx: *Context) !void {
-    ctx.program_counter = @as(usize, @truncate(ctx.stack.pop()));
+pub inline fn jump(interp: *Interpreter) !void {
+    interp.program_counter = @as(usize, @truncate(interp.stack.pop()));
 }
 
-pub inline fn jumpi(ctx: *Context) !void {
-    const destination = ctx.stack.pop();
-    const condition = ctx.stack.pop();
+pub inline fn jumpi(interp: *Interpreter) !void {
+    const destination = interp.stack.pop();
+    const condition = interp.stack.pop();
     if (condition != 0) {
-        ctx.program_counter = @as(usize, @truncate(destination));
+        interp.program_counter = @as(usize, @truncate(destination));
     }
 }
 
-pub inline fn pc(ctx: *Context) !void {
+pub inline fn pc(interp: *Interpreter) !void {
     // Program counter is advanced before executing the instruction
-    try ctx.stack.push(ctx.program_counter - 1);
+    try interp.stack.push(interp.program_counter - 1);
 }
