@@ -3,7 +3,7 @@ const Allocator = std.mem.Allocator;
 const Word = @import("constants").Word;
 const Stack = @import("stack.zig").Stack;
 const Storage = @import("storage.zig").Storage;
-const Memory = @import("memory.zig").Memory;
+const Memory = @import("Memory.zig");
 
 const Self = @This();
 const StackType = Stack(Word);
