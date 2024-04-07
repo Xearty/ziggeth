@@ -48,6 +48,7 @@ pub fn Stack(comptime T: type) type {
             var buffer: [1024]u8 = undefined;
             const format = "{}";
             var message = std.ArrayList(u8).init(self.inner.allocator);
+            defer message.deinit();
 
             for (self.inner.items) |item| {
                 const line = try std.fmt.bufPrint(&buffer, format, .{item});

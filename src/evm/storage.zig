@@ -32,6 +32,7 @@ pub fn Storage(comptime K: type, comptime V: type) type {
             var buffer: [1024]u8 = undefined;
             const format = "{} = {}";
             var message = std.ArrayList(u8).init(self.inner.allocator);
+            defer message.deinit();
 
             var iter = self.inner.iterator();
             while (iter.next()) |pair| {
