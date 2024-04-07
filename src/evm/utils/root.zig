@@ -8,6 +8,14 @@ pub fn wordFromBigEndianBytes(bytes: []const u8) Word {
     return result;
 }
 
+pub fn bigEndianBytesFromWord(word: Word) [@sizeOf(Word)]u8 {
+    var buffer: [@sizeOf(Word)]u8 = undefined;
+    for (0..@sizeOf(Word)) |i| {
+        buffer[i] = @truncate(extractIthByte(Word, word, i));
+    }
+    return buffer;
+}
+
 pub fn swap(comptime T: type, a: *T, b: *T) void {
     const temp = a.*;
     a.* = b.*;
@@ -27,14 +35,15 @@ pub fn printBits(value: Word) void {
     for (0..256) |index| {
         const bitmask = @as(Word, 1) << @intCast(255 - index);
         if (value & bitmask != 0) {
-            std.debug.print("1", .{});
+            print("1", .{});
         } else {
-            std.debug.print("0", .{});
+            print("0", .{});
         }
     }
-    std.debug.print("\n", .{});
+    print("\n", .{});
 }
 
+// TODO: maybe do this return a u8
 pub fn extractIthByte(comptime T: type, value: T, i: T) T {
     return (value >> (248 - @as(u8, @truncate(i)) * 8)) & 0xff;
 }

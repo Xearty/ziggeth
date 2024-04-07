@@ -6,18 +6,18 @@ const utils = @import("evm_utils");
 
 pub const Memory = struct {
     const Self = @This();
-    const InnerType = ArrayList(Word);
+    const InnerType = ArrayList(u8);
     const reserved_slots_count = 4;
 
-    inner: ArrayList(Word),
+    inner: InnerType,
     highest_used_address: usize,
 
     pub fn init(allocator: Allocator) !Self {
-        var inner = try InnerType.initCapacity(allocator, reserved_slots_count);
+        var inner = try InnerType.initCapacity(allocator, reserved_slots_count * @sizeOf(Word));
         inner.appendNTimesAssumeCapacity(0, inner.capacity);
         return Self {
             .inner = inner,
-            .highest_used_address = reserved_slots_count - 1,
+            .highest_used_address = reserved_slots_count * @sizeOf(Word) - 1,
         };
     }
 
@@ -26,17 +26,19 @@ pub const Memory = struct {
     }
 
     pub fn store(self: *Self, value: Word, offset: usize) !void {
-        try self.inner.ensureTotalCapacity(offset + 1);
+        try self.inner.ensureTotalCapacity(offset * @sizeOf(Word) + 1);
         const new_slots_count = self.inner.capacity - self.inner.items.len;
         self.inner.appendNTimesAssumeCapacity(0, new_slots_count);
 
-        self.inner.items[offset] = value;
+        const bytes = utils.bigEndianBytesFromWord(value);
+        for (0..@sizeOf(Word)) |i| self.inner.items[offset + i] = bytes[i];
+
         self.highest_used_address = @max(self.highest_used_address, offset);
     }
 
     pub fn load(self: *Self, offset: usize) Word {
         std.debug.assert(offset <= self.highest_used_address);
-        return self.inner.items[offset];
+        return utils.wordFromBigEndianBytes(self.inner.items[offset..offset+@sizeOf(Word)]);
     }
 
     pub fn prettyPrint(self: *const Self) !void {
@@ -57,6 +59,6 @@ pub const Memory = struct {
         }
 
         _ = message.popOrNull();
-            utils.printBoxed("Memory", message.items);
+        utils.printBoxed("Memory", message.items);
     }
 };
