@@ -54,21 +54,32 @@ pub fn size(self: *Self) usize {
 
 pub fn prettyPrint(self: *const Self) !void {
     var buffer: [1024]u8 = undefined;
-    var message = std.ArrayList(u8).init(self.inner.allocator);
-    const number_column_len = utils.getNumberLength(usize, self.highest_used_address);
+    var dump = std.ArrayList(u8).init(self.inner.allocator);
+    defer dump.deinit();
 
-    for (self.inner.items[0..self.highest_used_address+1], 0..) |word, index| {
-        const address_number = try std.fmt.bufPrint(&buffer, "{}:", .{index});
-        try message.appendSlice(address_number);
+    const bytes_per_line = 32;
+    const last_displayed_address = self.highest_used_address / bytes_per_line * bytes_per_line;
+    const number_column_len = utils.getNumberLength(usize, last_displayed_address);
 
-        const address_len = utils.getNumberLength(usize, index);
-        for (address_len..number_column_len+1) |_| try message.append(' ');
+    var rest = self.inner.items[0..self.highest_used_address+1];
+    var line_idx: usize = 0;
 
-        const line = try std.fmt.bufPrint(&buffer, "{}", .{word});
-        try message.appendSlice(line);
-        try message.append('\n');
+    while (rest.len != 0) : (line_idx += 1) {
+        const address_len = utils.getNumberLength(usize, line_idx * bytes_per_line);
+        for (address_len..number_column_len) |_| try dump.append(' ');
+
+        const address_number = try std.fmt.bufPrint(&buffer, "{}: ", .{line_idx * bytes_per_line});
+        try dump.appendSlice(address_number);
+
+        for (rest[0..@min(bytes_per_line, rest.len)]) |byte| {
+            const formatted_byte = try std.fmt.bufPrint(&buffer, "{x:0>2} ", .{byte});
+            try dump.appendSlice(formatted_byte);
+        }
+        try dump.append('\n');
+
+        rest = rest[@min(bytes_per_line, rest.len)..];
     }
 
-    _ = message.popOrNull();
-    utils.printBoxed("Memory", message.items);
+    _ = dump.popOrNull();
+    utils.printBoxed("Memory", dump.items);
 }

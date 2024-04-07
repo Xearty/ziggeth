@@ -8,7 +8,7 @@ pub fn main() !void {
 
     const bytecode: []const u8 = &.{
         @intFromEnum(evm.Opcode.PUSH1), 100,
-        @intFromEnum(evm.Opcode.PUSH2), 0x01, 0xa1,
+        @intFromEnum(evm.Opcode.PUSH1), 0x04,
         @intFromEnum(evm.Opcode.MSTORE8),
         @intFromEnum(evm.Opcode.MSIZE),
     };
