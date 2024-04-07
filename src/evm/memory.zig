@@ -41,6 +41,7 @@ pub const Memory = struct {
         const new_slots_count = self.inner.capacity - self.inner.items.len;
         self.inner.appendNTimesAssumeCapacity(0, new_slots_count);
         self.inner.items[offset] = byte;
+        self.highest_used_address = @max(self.highest_used_address, offset);
     }
 
     pub fn load(self: *Self, offset: usize) Word {
