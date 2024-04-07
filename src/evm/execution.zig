@@ -4,7 +4,7 @@ const instructions = @import("evm_instructions");
 const opcodes = instructions.opcodes;
 const constants = @import("constants");
 const math = @import("math");
-const Interpreter = @import("interpreter.zig").Interpreter;
+const Interpreter = @import("Interpreter.zig");
 const Word = constants.Word;
 const SignedWord = constants.SignedWord;
 
