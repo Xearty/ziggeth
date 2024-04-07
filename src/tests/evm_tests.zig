@@ -5,7 +5,6 @@ const testing_utils = @import("test_utils.zig");
 const op = testing_utils.op;
 const basicValueTest = testing_utils.basicValueTest;
 
-
 test "ADD instruction" {
     try basicValueTest(0x3, &.{
         op(.PUSH1), 0x1,

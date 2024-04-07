@@ -7,23 +7,14 @@ pub fn main() !void {
     const allocator = gpa.allocator();
 
     const bytecode: []const u8 = &.{
-        @intFromEnum(evm.Opcode.PUSH1), 69,
-        @intFromEnum(evm.Opcode.PUSH1), 71,
-        @intFromEnum(evm.Opcode.PUSH1), 72,
-        @intFromEnum(evm.Opcode.PUSH1), 73,  // value
-        @intFromEnum(evm.Opcode.PUSH1), 0x5, // key
-        @intFromEnum(evm.Opcode.SSTORE),
-        @intFromEnum(evm.Opcode.PUSH1), 0x5, // key
-        @intFromEnum(evm.Opcode.SLOAD),
-        @intFromEnum(evm.Opcode.PUSH1), 69,  // value
-        @intFromEnum(evm.Opcode.PUSH1), 100, // key
-        @intFromEnum(evm.Opcode.SSTORE),
-        @intFromEnum(evm.Opcode.PUSH1), 221,  // value
-        @intFromEnum(evm.Opcode.PUSH1), 242, // key
-        @intFromEnum(evm.Opcode.SSTORE),
+        @intFromEnum(evm.Opcode.PUSH1), 100,
+        @intFromEnum(evm.Opcode.PUSH1), 4,
+        @intFromEnum(evm.Opcode.MSTORE),
+        @intFromEnum(evm.Opcode.PUSH1), 4,
+        @intFromEnum(evm.Opcode.MLOAD),
     };
 
-    var evm_interp = evm.Interpreter.init(allocator, bytecode);
+    var evm_interp = try evm.Interpreter.init(allocator, bytecode);
     defer evm_interp.deinit();
 
     try evm.execute(&evm_interp);
@@ -34,3 +25,6 @@ pub fn main() !void {
     utils.printBoxed("Decompiled Bytecode", decompiled_bytecode);
 }
 
+// TODO: rename operands in instruction definitions
+// TODO: implement merkle patricia trie instead of hashmap and serialize/deserialize it to/from file
+// TODO: transactions to storage should be recorded and committed only once only on success

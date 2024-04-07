@@ -21,3 +21,15 @@ pub inline fn pc(interp: *Interpreter) !void {
     // Program counter is advanced before executing the instruction
     try interp.stack.push(interp.program_counter - 1);
 }
+
+pub fn mload(interp: *Interpreter) !void {
+    const offset = interp.stack.pop();
+    const value = interp.memory.load(@intCast(offset));
+    try interp.stack.push(value);
+}
+
+pub fn mstore(interp: *Interpreter) !void {
+    const offset = interp.stack.pop();
+    const value = interp.stack.pop();
+    try interp.memory.store(value, @intCast(offset));
+}
