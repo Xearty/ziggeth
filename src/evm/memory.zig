@@ -36,6 +36,13 @@ pub const Memory = struct {
         self.highest_used_address = @max(self.highest_used_address, offset);
     }
 
+    pub fn store8(self: *Self, byte: u8, offset: usize) !void {
+        try self.inner.ensureTotalCapacity(offset + 1);
+        const new_slots_count = self.inner.capacity - self.inner.items.len;
+        self.inner.appendNTimesAssumeCapacity(0, new_slots_count);
+        self.inner.items[offset] = byte;
+    }
+
     pub fn load(self: *Self, offset: usize) Word {
         std.debug.assert(offset <= self.highest_used_address);
         return utils.wordFromBigEndianBytes(self.inner.items[offset..offset+@sizeOf(Word)]);

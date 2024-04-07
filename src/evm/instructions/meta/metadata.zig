@@ -153,6 +153,11 @@ pub const instructions_metadata = [_]InstructionMetadata{
         .size = 1,
     },
     .{
+        .mnemonic = "MSTORE8",
+        .opcode = 0x53,
+        .size = 1,
+    },
+    .{
         .mnemonic = "SLOAD",
         .opcode = 0x54,
         .size = 1,
