@@ -26,12 +26,10 @@ fn DefineOpcodes() type {
     const defs = @import("meta/metadata.zig").instructions_metadata;
 
     var enumDecls: [defs.len]std.builtin.Type.EnumField = undefined;
-    inline for (defs, 0..) |def, index| {
-        enumDecls[index] = .{
-            .name = def.mnemonic ++ "",
-            .value = def.opcode,
-        };
-    }
+    inline for (&enumDecls, &defs) |*decl, *def| decl.* = .{
+        .name = def.mnemonic ++ "",
+        .value = def.opcode,
+    };
 
     return @Type(.{ .Enum = .{
         .tag_type = u8,
