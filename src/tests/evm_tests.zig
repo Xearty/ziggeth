@@ -553,3 +553,23 @@ test "SSLOAD/SSTORE instructions" {
         op(.SLOAD),
     });
 }
+
+test "MSTORE/MLOAD instructions" {
+    try basicValueTest(100, &.{
+        op(.PUSH1), 100,
+        op(.PUSH1), 36,
+        op(.MSTORE),
+        op(.PUSH1), 36,
+        op(.MLOAD),
+    });
+}
+
+test "MSTORE8/MLOAD instructions" {
+    try basicValueTest(100, &.{
+        op(.PUSH1), 100,
+        op(.PUSH1), 35,
+        op(.MSTORE8),
+        op(.PUSH1), 4,
+        op(.MLOAD),
+    });
+}
