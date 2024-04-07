@@ -49,6 +49,10 @@ pub const Memory = struct {
         return utils.wordFromBigEndianBytes(self.inner.items[offset..offset+@sizeOf(Word)]);
     }
 
+    pub fn size(self: *Self) usize {
+        return self.highest_used_address + 1;
+    }
+
     pub fn prettyPrint(self: *const Self) !void {
         var buffer: [1024]u8 = undefined;
         var message = std.ArrayList(u8).init(self.inner.allocator);

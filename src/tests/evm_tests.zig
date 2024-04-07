@@ -573,3 +573,12 @@ test "MSTORE8/MLOAD instructions" {
         op(.MLOAD),
     });
 }
+
+test "MSIZE instructions" {
+    try basicValueTest(418, &.{
+        op(.PUSH1), 100,
+        op(.PUSH2), 0x01, 0xa1,
+        op(.MSTORE8),
+        op(.MSIZE),
+    });
+}

@@ -182,6 +182,11 @@ pub const instructions_metadata = [_]InstructionMetadata{
         .opcode = 0x58,
         .size = 1,
     },
+    .{
+        .mnemonic = "MSIZE",
+        .opcode = 0x59,
+        .size = 1,
+    },
 } ++ genPushInstructionDefinitions()
   ++ genDupInstructionDefinitions()
   ++ genSwapInstructionDefinitions();

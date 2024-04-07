@@ -39,3 +39,7 @@ pub fn mstore8(interp: *Interpreter) !void {
     const value = interp.stack.pop();
     try interp.memory.store8(@truncate(value), @intCast(offset));
 }
+
+pub fn msize(interp: *Interpreter) !void {
+    try interp.stack.push(interp.memory.size());
+}
