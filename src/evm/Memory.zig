@@ -14,7 +14,7 @@ highest_used_address: usize,
 pub fn init(allocator: Allocator) !Self {
     var inner = try InnerType.initCapacity(allocator, reserved_slots_count * @sizeOf(Word));
     inner.appendNTimesAssumeCapacity(0, inner.capacity);
-    return Self {
+    return .{
         .inner = inner,
         .highest_used_address = reserved_slots_count * @sizeOf(Word) - 1,
     };

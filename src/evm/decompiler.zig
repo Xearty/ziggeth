@@ -6,7 +6,6 @@ const instructions = @import("evm_instructions");
 const opcodes = instructions.opcodes;
 const utils = @import("evm_utils");
 
-
 pub fn decompile(allocator: Allocator, bytecode: []const u8) ![]u8 {
     var buffer: [1024]u8 = undefined;
     var decompiled_bytecode = ArrayList(u8).init(allocator);

@@ -11,7 +11,7 @@ pub fn Stack(comptime T: type) type {
         inner: InnerType,
 
         pub fn init(allocator: Allocator) Self {
-            return Self {
+            return .{
                 .inner = InnerType.init(allocator),
             };
         }
