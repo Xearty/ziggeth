@@ -138,6 +138,11 @@ pub const instructions_metadata = [_]InstructionMetadata{
         .size = 1,
     },
     .{
+        .mnemonic = "SHA3",
+        .opcode = 0x20,
+        .size = 1,
+    },
+    .{
         .mnemonic = "POP",
         .opcode = 0x50,
         .size = 1,

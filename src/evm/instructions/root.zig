@@ -6,6 +6,7 @@ pub usingnamespace @import("definitions/comparison.zig");
 pub usingnamespace @import("definitions/bitwise.zig");
 pub usingnamespace @import("definitions/stack.zig");
 pub usingnamespace @import("definitions/state.zig");
+pub usingnamespace @import("definitions/hash.zig");
 pub usingnamespace @import("definitions/host.zig");
 
 // returns the unquantified tag

@@ -52,6 +52,11 @@ pub fn size(self: *Self) usize {
     return self.highest_used_address + 1;
 }
 
+pub fn get(self: *Self, offset: usize, length: usize) []const u8 {
+    // TODO: Do bounds checking and return an error
+    return self.inner.items[offset..offset+length];
+}
+
 pub fn prettyPrint(self: *const Self) !void {
     var buffer: [1024]u8 = undefined;
     var dump = std.ArrayList(u8).init(self.inner.allocator);

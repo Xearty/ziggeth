@@ -7,10 +7,12 @@ pub fn main() !void {
     const allocator = gpa.allocator();
 
     const bytecode: []const u8 = &.{
-        @intFromEnum(evm.Opcode.PUSH1), 100,
-        @intFromEnum(evm.Opcode.PUSH1), 0x04,
+        @intFromEnum(evm.Opcode.PUSH1), 48,
+        @intFromEnum(evm.Opcode.PUSH1), 0x00,
         @intFromEnum(evm.Opcode.MSTORE8),
-        @intFromEnum(evm.Opcode.MSIZE),
+        @intFromEnum(evm.Opcode.PUSH1), 0x02,
+        @intFromEnum(evm.Opcode.PUSH1), 0x00,
+        @intFromEnum(evm.Opcode.SHA3),
     };
 
     var volatile_host = evm.VolatileHost.init(allocator);
