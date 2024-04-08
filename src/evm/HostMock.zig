@@ -3,16 +3,15 @@ const Allocator = std.mem.Allocator;
 const Host = @import("Host.zig");
 const constants = @import("constants");
 const Word = constants.Word;
-const Storage = @import("storage.zig").Storage;
+const Storage = @import("Storage.zig");
 
 const Self = @This();
-const StorageType = Storage(Word, Word);
 
-storage: StorageType,
+storage: Storage,
 
 pub fn init(allocator: Allocator) Self {
     return .{
-        .storage = StorageType.init(allocator),
+        .storage = Storage.init(allocator),
     };
 }
 
