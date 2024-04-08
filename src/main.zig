@@ -13,16 +13,16 @@ pub fn main() !void {
         @intFromEnum(evm.Opcode.MSIZE),
     };
 
-    var host_mock = evm.HostMock.init(allocator);
-    defer host_mock.deinit();
+    var volatile_host = evm.VolatileHost.init(allocator);
+    defer volatile_host.deinit();
 
-    var evm_host = host_mock.host();
+    var evm_host = volatile_host.host();
 
     var evm_interp = try evm.Interpreter.init(allocator, &evm_host, bytecode);
     defer evm_interp.deinit();
     try evm.execute(&evm_interp);
 
-    try host_mock.storage.prettyPrint();
+    try volatile_host.storage.prettyPrint();
     try evm_interp.prettyPrint();
 
     const decompiled_bytecode = try evm.decompile(allocator, bytecode);

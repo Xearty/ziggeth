@@ -10,10 +10,10 @@ pub fn op(comptime opcode: Opcode) u8 {
 pub fn basicValueTest(expected_value: Word, bytecode: []const u8) !void {
     const allocator = std.testing.allocator;
 
-    var host_mock = evm.HostMock.init(allocator);
-    defer host_mock.deinit();
+    var volatile_host = evm.VolatileHost.init(allocator);
+    defer volatile_host.deinit();
 
-    var evm_host = host_mock.host();
+    var evm_host = volatile_host.host();
 
     var evm_interp = try evm.Interpreter.init(allocator, &evm_host, bytecode);
     defer evm_interp.deinit();
