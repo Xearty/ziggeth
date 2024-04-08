@@ -7,7 +7,7 @@ pub fn op(comptime opcode: Opcode) u8 {
     return @intFromEnum(opcode);
 }
 
-pub fn basicValueTest(expected_value: Word, bytecode: []const u8) !void {
+pub fn volatileTest(expected_value: Word, bytecode: []const u8) !void {
     const allocator = std.testing.allocator;
 
     var volatile_host = evm.VolatileHost.init(allocator);
