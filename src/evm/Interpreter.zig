@@ -2,28 +2,27 @@ const std = @import("std");
 const Allocator = std.mem.Allocator;
 const Word = @import("constants").Word;
 const Stack = @import("stack.zig").Stack;
-const Storage = @import("storage.zig").Storage;
+const Host = @import("Host.zig");
 const Memory = @import("Memory.zig");
 
 const Self = @This();
 const StackType = Stack(Word);
-const StorageType = Storage(Word, Word);
 
 program_counter: usize,
 bytecode: []const u8,
 stack: StackType,
 memory: Memory,
-storage: StorageType,
+host: *Host,
 status: VMStatus,
 allocator: Allocator,
 
-pub fn init(allocator: Allocator, bytecode: []const u8) !Self {
+pub fn init(allocator: Allocator, host: *Host, bytecode: []const u8) !Self {
     return .{
         .program_counter = 0,
         .bytecode = bytecode,
         .stack = StackType.init(allocator),
         .memory = try Memory.init(allocator),
-        .storage = StorageType.init(allocator),
+        .host = host,
         .status = .RUNNING,
         .allocator = allocator,
     };
@@ -32,7 +31,6 @@ pub fn init(allocator: Allocator, bytecode: []const u8) !Self {
 pub fn deinit(self: *Self) void {
     self.stack.deinit();
     self.memory.deinit();
-    self.storage.deinit();
 }
 
 pub fn advanceProgramCounter(self: *Self, leap: usize) void {
@@ -43,7 +41,6 @@ pub fn advanceProgramCounter(self: *Self, leap: usize) void {
 }
 
 pub fn prettyPrint(self: *const Self) !void {
-    try self.storage.prettyPrint();
     try self.stack.prettyPrint();
     try self.memory.prettyPrint();
 }

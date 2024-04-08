@@ -1,12 +1,13 @@
 const std = @import("std");
 const evm = @import("evm");
+const Host = evm.Host;
 const Interpreter = evm.Interpreter;
 const constants = @import("constants");
 const Word = constants.Word;
 
 pub inline fn sload(interp: *Interpreter) !void {
     const key = interp.stack.pop();
-    const maybe_value = interp.storage.load(key);
+    const maybe_value = interp.host.sload(key);
     if (maybe_value) |value| {
         try interp.stack.push(value);
     } else {
@@ -19,5 +20,5 @@ pub inline fn sload(interp: *Interpreter) !void {
 pub inline fn sstore(interp: *Interpreter) !void {
     const key = interp.stack.pop();
     const value = @as(Word, @bitCast(interp.stack.pop()));
-    try interp.storage.store(key, value);
+    interp.host.sstore(key, value);
 }

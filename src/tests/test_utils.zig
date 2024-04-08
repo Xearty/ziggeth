@@ -8,7 +8,14 @@ pub fn op(comptime opcode: Opcode) u8 {
 }
 
 pub fn basicValueTest(expected_value: Word, bytecode: []const u8) !void {
-    var evm_interp = try evm.Interpreter.init(std.testing.allocator, bytecode);
+    const allocator = std.testing.allocator;
+
+    var host_mock = evm.HostMock.init(allocator);
+    defer host_mock.deinit();
+
+    var evm_host = host_mock.host();
+
+    var evm_interp = try evm.Interpreter.init(allocator, &evm_host, bytecode);
     defer evm_interp.deinit();
 
     try evm.execute(&evm_interp);

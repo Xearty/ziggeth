@@ -13,9 +13,16 @@ pub fn main() !void {
         @intFromEnum(evm.Opcode.MSIZE),
     };
 
-    var evm_interp = try evm.Interpreter.init(allocator, bytecode);
+    var host_mock = evm.HostMock.init(allocator);
+    defer host_mock.deinit();
+
+    var evm_host = host_mock.host();
+
+    var evm_interp = try evm.Interpreter.init(allocator, &evm_host, bytecode);
     defer evm_interp.deinit();
     try evm.execute(&evm_interp);
+
+    try host_mock.storage.prettyPrint();
     try evm_interp.prettyPrint();
 
     const decompiled_bytecode = try evm.decompile(allocator, bytecode);
@@ -28,3 +35,5 @@ pub fn main() !void {
 // TODO: transactions to storage should be recorded and committed only once only on success
 // TODO: use a stack of memory in the interpreter. When a contract is called from within a contract
 // the memory of the parent contract is saved and restored after the child contract's execution is complete
+// TODO: storage operations should take contract address from the environment
+// TODO: Think of Host errors that can happen and complete the Host functions return types

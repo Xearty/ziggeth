@@ -1,12 +1,7 @@
-const std = @import("std");
 const utils = @import("evm_utils");
 const instructions = @import("evm_instructions");
 const opcodes = instructions.opcodes;
-const constants = @import("constants");
-const math = @import("math");
 const Interpreter = @import("Interpreter.zig");
-const Word = constants.Word;
-const SignedWord = constants.SignedWord;
 
 pub fn execute(interp: *Interpreter) !void {
     while (interp.status == .RUNNING) {
