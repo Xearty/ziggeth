@@ -106,10 +106,8 @@ pub fn getNumberLength(comptime T: type, number: T) u32 {
     return length;
 }
 
-pub fn toLower(comptime string: []const u8) []const u8 {
-    comptime {
-        var buf: [string.len]u8 = undefined;
-        return std.ascii.lowerString(&buf, string);
-    }
+pub fn toLower(string: []const u8) []const u8 {
+    var buf: [string.len]u8 = undefined;
+    return std.ascii.lowerString(&buf, string);
 }
 
