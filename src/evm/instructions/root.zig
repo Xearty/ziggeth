@@ -22,18 +22,6 @@ pub fn isQuantified(comptime opcode: opcodes.Opcode) ?[]const u8 {
     }
 }
 
-pub fn requiresHost(comptime opcode: opcodes.Opcode) bool {
-    comptime {
-        const host_implemented_instructions = [_][]const u8 { "SSTORE", "SLOAD" };
-        for (host_implemented_instructions) |mnemonic| {
-            if (std.mem.eql(u8, @tagName(opcode), mnemonic)) {
-                return true;
-            }
-        }
-        return false;
-    }
-}
-
 pub fn extractQuantity(comptime opcode: opcodes.Opcode) u32 {
     comptime {
         std.debug.assert(isQuantified(opcode) != null);
