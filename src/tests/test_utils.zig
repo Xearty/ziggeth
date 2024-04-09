@@ -18,6 +18,6 @@ pub fn volatileTest(expected_value: Word, bytecode: []const u8) !void {
     var evm_interp = try evm.Interpreter.init(allocator, &evm_host, bytecode);
     defer evm_interp.deinit();
 
-    try evm.execute(&evm_interp);
+    try evm_interp.execute();
     try std.testing.expectEqual(expected_value, evm_interp.stack.peek());
 }

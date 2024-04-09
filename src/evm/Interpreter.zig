@@ -4,8 +4,12 @@ const Word = @import("constants").Word;
 const Stack = @import("stack.zig").Stack;
 const Host = @import("Host.zig");
 const Memory = @import("Memory.zig");
+const instructions = @import("evm_instructions");
+const opcodes = instructions.opcodes;
+const Opcode = opcodes.Opcode;
+const utils = @import("evm_utils");
 
-const Self = @This();
+const Interpreter = @This();
 const StackType = Stack(Word);
 
 program_counter: usize,
@@ -16,7 +20,7 @@ host: *Host,
 status: VMStatus,
 allocator: Allocator,
 
-pub fn init(allocator: Allocator, host: *Host, bytecode: []const u8) !Self {
+pub fn init(allocator: Allocator, host: *Host, bytecode: []const u8) !Interpreter {
     return .{
         .program_counter = 0,
         .bytecode = bytecode,
@@ -28,23 +32,45 @@ pub fn init(allocator: Allocator, host: *Host, bytecode: []const u8) !Self {
     };
 }
 
-pub fn deinit(self: *Self) void {
+pub fn deinit(self: *Interpreter) void {
     self.stack.deinit();
     self.memory.deinit();
 }
 
-pub fn advanceProgramCounter(self: *Self, leap: usize) void {
+pub fn execute(self: *Interpreter) !void {
+    while (self.status == .RUNNING) {
+        const opcode = opcodes.fromByte(self.bytecode[self.program_counter]);
+        self.advanceProgramCounter(instructions.getSize(opcode));
+        try self.executeInstruction(opcode);
+    }
+}
+
+pub fn prettyPrint(self: *const Interpreter) !void {
+    try self.stack.prettyPrint();
+    try self.memory.prettyPrint();
+}
+
+fn executeInstruction(self: *Interpreter, opcode: Opcode) !void {
+    @setEvalBranchQuota(10000);
+    switch (opcode) {
+        inline else => |tag| {
+            if (comptime instructions.isQuantified(tag)) |unquantified_tag| {
+                const quantity = comptime instructions.extractQuantity(tag);
+                try @field(instructions, utils.toLower(unquantified_tag))(self, quantity);
+            } else {
+                const function = comptime utils.toLower(@tagName(tag));
+                try @field(instructions, function)(self);
+            }
+        }
+    }
+}
+
+fn advanceProgramCounter(self: *Interpreter, leap: usize) void {
     self.program_counter += leap;
     if (self.program_counter >= self.bytecode.len) {
         self.status = .HALTED;
     }
 }
-
-pub fn prettyPrint(self: *const Self) !void {
-    try self.stack.prettyPrint();
-    try self.memory.prettyPrint();
-}
-
 pub const VMStatus = enum {
     RUNNING,
     HALTED,

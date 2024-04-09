@@ -22,7 +22,7 @@ pub fn main() !void {
 
     var evm_interp = try evm.Interpreter.init(allocator, &evm_host, bytecode);
     defer evm_interp.deinit();
-    try evm.execute(&evm_interp);
+    try evm_interp.execute();
 
     try volatile_host.storage.prettyPrint();
     try evm_interp.prettyPrint();
