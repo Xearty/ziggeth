@@ -192,6 +192,11 @@ pub const instructions_metadata = [_]InstructionMetadata{
         .opcode = 0x59,
         .size = 1,
     },
+    .{
+        .mnemonic = "JUMPDEST",
+        .opcode = 0x5b,
+        .size = 1,
+    },
 } ++ genPushInstructionDefinitions()
   ++ genDupInstructionDefinitions()
   ++ genSwapInstructionDefinitions();

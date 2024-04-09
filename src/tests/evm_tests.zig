@@ -2,10 +2,11 @@ const Word = @import("constants").Word;
 const SignedWord = @import("constants").SignedWord;
 const testing_utils = @import("test_utils.zig");
 const op = testing_utils.op;
-const volatileTest = testing_utils.volatileTest;
+const volatileStackTestValue = testing_utils.volatileStackTestValue;
+const volatileStackTestError = testing_utils.volatileStackTestError;
 
 test "ADD instruction" {
-    try volatileTest(0x3, &.{
+    try volatileStackTestValue(0x3, &.{
         op(.PUSH1), 0x1,
         op(.PUSH1), 0x2,
         op(.ADD),
@@ -13,7 +14,7 @@ test "ADD instruction" {
 }
 
 test "MUL instruction" {
-    try volatileTest(0x25 * 0x53 * 0x31, &.{
+    try volatileStackTestValue(0x25 * 0x53 * 0x31, &.{
         op(.PUSH1), 0x25,
         op(.PUSH1), 0x53,
         op(.MUL),
@@ -23,7 +24,7 @@ test "MUL instruction" {
 }
 
 test "ADD and MUL instructions" {
-    try volatileTest(0x9, &.{
+    try volatileStackTestValue(0x9, &.{
         op(.PUSH1), 0x1,
         op(.PUSH1), 0x2,
         op(.ADD),
@@ -33,7 +34,7 @@ test "ADD and MUL instructions" {
 }
 
 test "STOP instruction" {
-    try volatileTest(0x3, &.{
+    try volatileStackTestValue(0x3, &.{
         op(.PUSH1), 0x1,
         op(.PUSH1), 0x2,
         op(.ADD),
@@ -44,7 +45,7 @@ test "STOP instruction" {
 }
 
 test "SUB instruction" {
-    try volatileTest(0x6, &.{
+    try volatileStackTestValue(0x6, &.{
         op(.PUSH1), 0x1,
         op(.PUSH1), 0x2,
         op(.ADD),
@@ -54,7 +55,7 @@ test "SUB instruction" {
 }
 
 test "DIV instruction" {
-    try volatileTest(0x3, &.{
+    try volatileStackTestValue(0x3, &.{
         op(.PUSH1), 0x1,
         op(.PUSH1), 0x9,
         op(.ADD),
@@ -64,7 +65,7 @@ test "DIV instruction" {
 }
 
 test "MOD instruction" {
-    try volatileTest(3, &.{
+    try volatileStackTestValue(3, &.{
         op(.PUSH1), 5,
         op(.PUSH1), 23,
         op(.MOD),
@@ -72,7 +73,7 @@ test "MOD instruction" {
 }
 
 test "PUSH2 instruction" {
-    try volatileTest(3526993988, &.{
+    try volatileStackTestValue(3526993988, &.{
         op(.PUSH2), 0x05, 0xad,
         op(.PUSH2), 0xf7, 0x02,
         op(.ADD),
@@ -82,7 +83,7 @@ test "PUSH2 instruction" {
 }
 
 test "PUSH3 instruction" {
-    try volatileTest(4849358562, &.{
+    try volatileStackTestValue(4849358562, &.{
         op(.PUSH3), 0x23, 0xe0, 0x93,
         op(.PUSH3), 0x67, 0x79, 0x43,
         op(.ADD),
@@ -92,7 +93,7 @@ test "PUSH3 instruction" {
 }
 
 test "PUSH32 instruction" {
-    try volatileTest(85970811241406490303390531509016784217088394200819083899633365944276094183929, &.{
+    try volatileStackTestValue(85970811241406490303390531509016784217088394200819083899633365944276094183929, &.{
         op(.PUSH32),
         0x70, 0x80, 0x48, 0xe2,
         0x39, 0xd9, 0xf4, 0x5b,
@@ -116,7 +117,7 @@ test "PUSH32 instruction" {
 }
 
 test "DUP1 instruction" {
-    try volatileTest(25, &.{
+    try volatileStackTestValue(25, &.{
         op(.PUSH1), 0x5,
         op(.DUP1),
         op(.MUL),
@@ -124,7 +125,7 @@ test "DUP1 instruction" {
 }
 
 test "DUP2 instruction" {
-    try volatileTest(48, &.{
+    try volatileStackTestValue(48, &.{
         op(.PUSH1), 0x5,
         op(.PUSH1), 0x8,
         op(.PUSH1), 0x6,
@@ -134,7 +135,7 @@ test "DUP2 instruction" {
 }
 
 test "DUP3 instruction" {
-    try volatileTest(30, &.{
+    try volatileStackTestValue(30, &.{
         op(.PUSH1), 0x5,
         op(.PUSH1), 0x8,
         op(.PUSH1), 0x6,
@@ -144,7 +145,7 @@ test "DUP3 instruction" {
 }
 
 test "SWAP1 instruction" {
-    try volatileTest(10, &.{
+    try volatileStackTestValue(10, &.{
         op(.PUSH1), 0x2,
         op(.PUSH1), 0x1,
         op(.SWAP1),
@@ -154,7 +155,7 @@ test "SWAP1 instruction" {
 }
 
 test "SWAP2 instruction" {
-    try volatileTest(20, &.{
+    try volatileStackTestValue(20, &.{
         op(.PUSH1), 0x4,
         op(.PUSH1), 0x2,
         op(.PUSH1), 0x1,
@@ -165,7 +166,7 @@ test "SWAP2 instruction" {
 }
 
 test "SDIV instruction" {
-    try volatileTest(@as(Word, @bitCast(@as(SignedWord, -2))), &.{
+    try volatileStackTestValue(@as(Word, @bitCast(@as(SignedWord, -2))), &.{
         op(.PUSH32),
         0xff, 0xff, 0xff, 0xff,
         0xff, 0xff, 0xff, 0xff,
@@ -181,7 +182,7 @@ test "SDIV instruction" {
 }
 
 test "EXP instruction" {
-    try volatileTest(4782969, &.{
+    try volatileStackTestValue(4782969, &.{
         op(.PUSH1), 0x7,
         op(.PUSH1), 0x9,
         op(.EXP),
@@ -189,7 +190,7 @@ test "EXP instruction" {
 }
 
 test "EXP instruction exponent 0" {
-    try volatileTest(1, &.{
+    try volatileStackTestValue(1, &.{
         op(.PUSH1), 0x0,
         op(.PUSH32),
         0x70, 0x80, 0x48, 0xe2,
@@ -205,7 +206,7 @@ test "EXP instruction exponent 0" {
 }
 
 test "EXP instruction exponent 1" {
-    try volatileTest(50885698490394846300529650755160262542539216671430528467191833472526591786466, &.{
+    try volatileStackTestValue(50885698490394846300529650755160262542539216671430528467191833472526591786466, &.{
         op(.PUSH1), 0x1,
         op(.PUSH32),
         0x70, 0x80, 0x48, 0xe2,
@@ -221,7 +222,7 @@ test "EXP instruction exponent 1" {
 }
 
 test "EXP instruction exponent 2" {
-    try volatileTest(11978948873077291082614935807129539229662568818552917922358889902544049961860, &.{
+    try volatileStackTestValue(11978948873077291082614935807129539229662568818552917922358889902544049961860, &.{
         op(.PUSH1), 0x2,
         op(.PUSH32),
         0x70, 0x80, 0x48, 0xe2,
@@ -237,7 +238,7 @@ test "EXP instruction exponent 2" {
 }
 
 test "EXP instruction exponent 3" {
-    try volatileTest(37345024310738433181113357916941771707155294456053137591045008100969753247368, &.{
+    try volatileStackTestValue(37345024310738433181113357916941771707155294456053137591045008100969753247368, &.{
         op(.PUSH1), 0x3,
         op(.PUSH32),
         0x70, 0x80, 0x48, 0xe2,
@@ -253,7 +254,7 @@ test "EXP instruction exponent 3" {
 }
 
 test "EXP instruction exponent 4" {
-    try volatileTest(20779191417530337471435148661939714880243222816637389320675012265821831961616, &.{
+    try volatileStackTestValue(20779191417530337471435148661939714880243222816637389320675012265821831961616, &.{
         op(.PUSH1), 0x4,
         op(.PUSH32),
         0x70, 0x80, 0x48, 0xe2,
@@ -269,7 +270,7 @@ test "EXP instruction exponent 4" {
 }
 
 test "EXP instruction exponent 5" {
-    try volatileTest(60623049136096303768541319095352851060905021887177462200724055449315697792544, &.{
+    try volatileStackTestValue(60623049136096303768541319095352851060905021887177462200724055449315697792544, &.{
         op(.PUSH1), 0x5,
         op(.PUSH32),
         0x70, 0x80, 0x48, 0xe2,
@@ -285,7 +286,7 @@ test "EXP instruction exponent 5" {
 }
 
 test "EXP instruction exponent 255" {
-    try volatileTest(57896044618658097711785492504343953926634992332820282019728792003956564819968, &.{
+    try volatileStackTestValue(57896044618658097711785492504343953926634992332820282019728792003956564819968, &.{
         op(.PUSH1), 0xff,
         op(.PUSH32),
         0x70, 0x80, 0x48, 0xe2,
@@ -301,7 +302,7 @@ test "EXP instruction exponent 255" {
 }
 
 test "EXP instruction exponent 256" {
-    try volatileTest(0, &.{
+    try volatileStackTestValue(0, &.{
         op(.PUSH2), 0x01, 0x00,
         op(.PUSH32),
         0x70, 0x80, 0x48, 0xe2,
@@ -317,7 +318,7 @@ test "EXP instruction exponent 256" {
 }
 
 test "SIGNEXTEND instruction" {
-    try volatileTest(115792082335569848633007197573932045576244532214550284317904613665618839272930, &.{
+    try volatileStackTestValue(115792082335569848633007197573932045576244532214550284317904613665618839272930, &.{
         op(.PUSH12),
         0x3c, 0x66, 0x08, 0x01,
         0xb8, 0xeb, 0x42, 0x5f,
@@ -328,7 +329,7 @@ test "SIGNEXTEND instruction" {
 }
 
 test "LT instruction true" {
-    try volatileTest(1, &.{
+    try volatileStackTestValue(1, &.{
         op(.PUSH1), 93,
         op(.PUSH1), 58,
         op(.LT),
@@ -336,7 +337,7 @@ test "LT instruction true" {
 }
 
 test "LT instruction false" {
-    try volatileTest(0, &.{
+    try volatileStackTestValue(0, &.{
         op(.PUSH1), 58,
         op(.PUSH1), 93,
         op(.LT),
@@ -344,7 +345,7 @@ test "LT instruction false" {
 }
 
 test "GT instruction true" {
-    try volatileTest(1, &.{
+    try volatileStackTestValue(1, &.{
         op(.PUSH1), 58,
         op(.PUSH1), 93,
         op(.GT),
@@ -352,7 +353,7 @@ test "GT instruction true" {
 }
 
 test "GT instruction false" {
-    try volatileTest(0, &.{
+    try volatileStackTestValue(0, &.{
         op(.PUSH1), 93,
         op(.PUSH1), 58,
         op(.GT),
@@ -360,7 +361,7 @@ test "GT instruction false" {
 }
 
 test "EQ instruction true" {
-    try volatileTest(1, &.{
+    try volatileStackTestValue(1, &.{
         op(.PUSH1), 58,
         op(.PUSH1), 58,
         op(.EQ),
@@ -368,7 +369,7 @@ test "EQ instruction true" {
 }
 
 test "EQ instruction false" {
-    try volatileTest(0, &.{
+    try volatileStackTestValue(0, &.{
         op(.PUSH1), 93,
         op(.PUSH1), 58,
         op(.EQ),
@@ -376,21 +377,21 @@ test "EQ instruction false" {
 }
 
 test "ISZERO instruction true" {
-    try volatileTest(0, &.{
+    try volatileStackTestValue(0, &.{
         op(.PUSH1), 0x69,
         op(.ISZERO),
     });
 }
 
 test "ISZERO instruction false" {
-    try volatileTest(1, &.{
+    try volatileStackTestValue(1, &.{
         op(.PUSH1), 0x0,
         op(.ISZERO),
     });
 }
 
 test "BYTE instruction 29th byte" {
-    try volatileTest(1, &.{
+    try volatileStackTestValue(1, &.{
         op(.PUSH3), 0x1, 0x2, 0x3,
         op(.PUSH1), 29,
         op(.BYTE),
@@ -398,7 +399,7 @@ test "BYTE instruction 29th byte" {
 }
 
 test "BYTE instruction 30th byte" {
-    try volatileTest(2, &.{
+    try volatileStackTestValue(2, &.{
         op(.PUSH3), 0x1, 0x2, 0x3,
         op(.PUSH1), 30,
         op(.BYTE),
@@ -406,7 +407,7 @@ test "BYTE instruction 30th byte" {
 }
 
 test "BYTE instruction 31th byte" {
-    try volatileTest(3, &.{
+    try volatileStackTestValue(3, &.{
         op(.PUSH3), 0x1, 0x2, 0x3,
         op(.PUSH1), 31,
         op(.BYTE),
@@ -414,7 +415,7 @@ test "BYTE instruction 31th byte" {
 }
 
 test "SHL instruction shift 1" {
-    try volatileTest(6, &.{
+    try volatileStackTestValue(6, &.{
         op(.PUSH1), 0x3,
         op(.PUSH1), 1,
         op(.SHL),
@@ -422,7 +423,7 @@ test "SHL instruction shift 1" {
 }
 
 test "SHL instruction shift 8" {
-    try volatileTest(768, &.{
+    try volatileStackTestValue(768, &.{
         op(.PUSH1), 0x3,
         op(.PUSH1), 8,
         op(.SHL),
@@ -430,7 +431,7 @@ test "SHL instruction shift 8" {
 }
 
 test "SHR instruction shift 8" {
-    try volatileTest(3, &.{
+    try volatileStackTestValue(3, &.{
         op(.PUSH2), 0x3, 0x0,
         op(.PUSH1), 8,
         op(.SHR),
@@ -438,7 +439,7 @@ test "SHR instruction shift 8" {
 }
 
 test "SHR instruction shift 2" {
-    try volatileTest(64, &.{
+    try volatileStackTestValue(64, &.{
         op(.PUSH2), 0x1, 0x0,
         op(.PUSH1), 2,
         op(.SHR),
@@ -446,7 +447,7 @@ test "SHR instruction shift 2" {
 }
 
 test "SAR instruction shift 2 no sign extension" {
-    try volatileTest(1130782121458165970933310400475467850129589694000396133197827968827276656640, &.{
+    try volatileStackTestValue(1130782121458165970933310400475467850129589694000396133197827968827276656640, &.{
         op(.PUSH32),
         0x0a, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00,
@@ -462,7 +463,7 @@ test "SAR instruction shift 2 no sign extension" {
 }
 
 test "SAR instruction shift 2 with sign extension" {
-    try volatileTest(102448860204109836966557922283077387221740826276435889667723213975751265091584, &.{
+    try volatileStackTestValue(102448860204109836966557922283077387221740826276435889667723213975751265091584, &.{
         op(.PUSH32),
         0x8a, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00,
@@ -478,7 +479,7 @@ test "SAR instruction shift 2 with sign extension" {
 }
 
 test "SAR instruction shift 3 with sign extension" {
-    try volatileTest(109120474720713016195064453645882647537505405471038226853590398991832197365760, &.{
+    try volatileStackTestValue(109120474720713016195064453645882647537505405471038226853590398991832197365760, &.{
         op(.PUSH32),
         0x8a, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00,
@@ -494,7 +495,7 @@ test "SAR instruction shift 3 with sign extension" {
 }
 
 test "POP instruction" {
-    try volatileTest(1, &.{
+    try volatileStackTestValue(1, &.{
         op(.PUSH1), 0x01,
         op(.PUSH1), 0x02,
         op(.POP),
@@ -502,14 +503,14 @@ test "POP instruction" {
 }
 
 test "PC instruction" {
-    try volatileTest(2, &.{
+    try volatileStackTestValue(2, &.{
         op(.PUSH1), 0x69,
         op(.PC),
     });
 }
 
-test "JUMP instruction" {
-    try volatileTest(4, &.{
+test "JUMP instruction invalid jump location" {
+    try volatileStackTestError(error.InvalidJumpLocation, &.{
         op(.PUSH1), 0x01,
         op(.PUSH1), 7,
         op(.JUMP),
@@ -519,8 +520,8 @@ test "JUMP instruction" {
     });
 }
 
-test "JUMPI instruction false" {
-    try volatileTest(5, &.{
+test "JUMPI instruction false invalid jump location" {
+    try volatileStackTestError(error.InvalidJumpLocation, &.{
         op(.PUSH1), 0x01,
         op(.PUSH1), 0, // condition
         op(.PUSH1), 9, // destrination
@@ -531,8 +532,8 @@ test "JUMPI instruction false" {
     });
 }
 
-test "JUMPI instruction true" {
-    try volatileTest(4, &.{
+test "JUMPI instruction true invalid jump location" {
+    try volatileStackTestError(error.InvalidJumpLocation, &.{
         op(.PUSH1), 0x01,
         op(.PUSH1), 1, // condition
         op(.PUSH1), 9, // destrination
@@ -543,8 +544,46 @@ test "JUMPI instruction true" {
     });
 }
 
+test "JUMP instruction valid jump location" {
+    try volatileStackTestValue(4, &.{
+        op(.PUSH1), 0x01,
+        op(.PUSH1), 7,
+        op(.JUMP),
+        op(.PUSH1), 0x02, // this push is skipped
+        op(.JUMPDEST),
+        op(.PUSH1), 0x03,
+        op(.ADD),
+    });
+}
+
+test "JUMPI instruction false valid jump location" {
+    try volatileStackTestValue(5, &.{
+        op(.PUSH1), 0x01,
+        op(.PUSH1), 0, // condition
+        op(.PUSH1), 9, // destrination
+        op(.JUMPI),
+        op(.PUSH1), 0x02, // this push is skipped
+        op(.JUMPDEST),
+        op(.PUSH1), 0x03,
+        op(.ADD),
+    });
+}
+
+test "JUMPI instruction true valid jump location" {
+    try volatileStackTestValue(4, &.{
+        op(.PUSH1), 0x01,
+        op(.PUSH1), 1, // condition
+        op(.PUSH1), 9, // destrination
+        op(.JUMPI),
+        op(.PUSH1), 0x02, // this push is skipped
+        op(.JUMPDEST),
+        op(.PUSH1), 0x03,
+        op(.ADD),
+    });
+}
+
 test "SSLOAD/SSTORE instructions" {
-    try volatileTest(69, &.{
+    try volatileStackTestValue(69, &.{
         op(.PUSH1), 69,  // value
         op(.PUSH1), 0x5, // key
         op(.SSTORE),
@@ -554,7 +593,7 @@ test "SSLOAD/SSTORE instructions" {
 }
 
 test "MSTORE/MLOAD instructions" {
-    try volatileTest(100, &.{
+    try volatileStackTestValue(100, &.{
         op(.PUSH1), 100,
         op(.PUSH1), 36,
         op(.MSTORE),
@@ -564,7 +603,7 @@ test "MSTORE/MLOAD instructions" {
 }
 
 test "MSTORE8/MLOAD instructions" {
-    try volatileTest(100, &.{
+    try volatileStackTestValue(100, &.{
         op(.PUSH1), 100,
         op(.PUSH1), 35,
         op(.MSTORE8),
@@ -574,7 +613,7 @@ test "MSTORE8/MLOAD instructions" {
 }
 
 test "MSIZE instructions" {
-    try volatileTest(418, &.{
+    try volatileStackTestValue(418, &.{
         op(.PUSH1), 100,
         op(.PUSH2), 0x01, 0xa1,
         op(.MSTORE8),

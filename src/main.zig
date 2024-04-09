@@ -39,3 +39,4 @@ pub fn main() !void {
 // the memory of the parent contract is saved and restored after the child contract's execution is complete
 // TODO: storage operations should take contract address from the environment
 // TODO: Think of Host errors that can happen and complete the Host functions return types
+// TODO: implement transaction validation

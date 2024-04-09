@@ -1,20 +1,38 @@
 const evm = @import("evm");
 const Interpreter = evm.Interpreter;
+const Opcode = evm.Opcode;
+
+const JumpError = error {
+    InvalidJumpLocation,
+};
 
 pub inline fn stop(interp: *Interpreter) !void {
     interp.status = .HALTED;
 }
 
 pub inline fn jump(interp: *Interpreter) !void {
-    interp.program_counter = @as(usize, @truncate(interp.stack.pop()));
+    const destination = interp.stack.pop();
+    if (interp.bytecode[@truncate(destination)] != @intFromEnum(Opcode.JUMPDEST)) {
+        return error.InvalidJumpLocation;
+    }
+    interp.program_counter = @as(usize, @truncate(destination));
 }
 
-pub inline fn jumpi(interp: *Interpreter) !void {
+pub inline fn jumpi(interp: *Interpreter) JumpError!void {
     const destination = interp.stack.pop();
     const condition = interp.stack.pop();
+    if (interp.bytecode[@truncate(destination)] != @intFromEnum(Opcode.JUMPDEST)) {
+        return error.InvalidJumpLocation;
+    }
     if (condition != 0) {
         interp.program_counter = @as(usize, @truncate(destination));
     }
+}
+
+pub inline fn jumpdest(interp: *Interpreter) !void {
+    _ = interp;
+    // this is just a marker in the bytecode denoting a valid
+    // jump location and has no effect on the machine state
 }
 
 pub inline fn pc(interp: *Interpreter) !void {
