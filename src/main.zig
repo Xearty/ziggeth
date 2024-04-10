@@ -1,35 +1,51 @@
 const std = @import("std");
 const evm = @import("evm");
 const utils = @import("evm_utils");
+const rlp = evm.rlp;
 
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     const allocator = gpa.allocator();
 
-    const bytecode: []const u8 = &.{
-        @intFromEnum(evm.Opcode.PUSH1), 48,
-        @intFromEnum(evm.Opcode.PUSH1), 0x00,
-        @intFromEnum(evm.Opcode.MSTORE8),
-        @intFromEnum(evm.Opcode.PUSH1), 0x02,
-        @intFromEnum(evm.Opcode.PUSH1), 0x00,
-        @intFromEnum(evm.Opcode.SHA3),
-    };
+    // const list: rlp.Item = rlp.Item { .string = "hello" };
+    // list.print();
+    var inner = rlp.ListBuilder.init(allocator);
+    // defer inner.deinit();
+    try inner.appendString("hello");
+    try inner.appendString("there");
 
-    var volatile_host = evm.VolatileHost.init(allocator);
-    defer volatile_host.deinit();
+    var outer = rlp.ListBuilder.init(allocator);
+    defer outer.deinit();
+    try inner.appendString("I am inside");
+    try outer.appendList(inner.list);
+    try outer.appendString("I am outside");
 
-    var evm_host = volatile_host.host();
+    outer.print();
 
-    var evm_interp = try evm.Interpreter.init(allocator, &evm_host, bytecode);
-    defer evm_interp.deinit();
-    try evm_interp.execute();
-
-    try volatile_host.storage.prettyPrint();
-    try evm_interp.prettyPrint();
-
-    const decompiled_bytecode = try evm.decompile(allocator, bytecode);
-    defer allocator.free(decompiled_bytecode);
-    utils.printBoxed("Decompiled Bytecode", decompiled_bytecode);
+    // const bytecode: []const u8 = &.{
+    //     @intFromEnum(evm.Opcode.PUSH1), 48,
+    //     @intFromEnum(evm.Opcode.PUSH1), 0x00,
+    //     @intFromEnum(evm.Opcode.MSTORE8),
+    //     @intFromEnum(evm.Opcode.PUSH1), 0x02,
+    //     @intFromEnum(evm.Opcode.PUSH1), 0x00,
+    //     @intFromEnum(evm.Opcode.SHA3),
+    // };
+    //
+    // var volatile_host = evm.VolatileHost.init(allocator);
+    // defer volatile_host.deinit();
+    //
+    // var evm_host = volatile_host.host();
+    //
+    // var evm_interp = try evm.Interpreter.init(allocator, &evm_host, bytecode);
+    // defer evm_interp.deinit();
+    // try evm_interp.execute();
+    //
+    // try volatile_host.storage.prettyPrint();
+    // try evm_interp.prettyPrint();
+    //
+    // const decompiled_bytecode = try evm.decompile(allocator, bytecode);
+    // defer allocator.free(decompiled_bytecode);
+    // utils.printBoxed("Decompiled Bytecode", decompiled_bytecode);
 }
 
 // TODO: rename operands in instruction definitions
