@@ -1,4 +1,5 @@
 const std = @import("std");
+const ArrayList = std.ArrayList;
 const evm = @import("evm");
 const utils = @import("evm_utils");
 const rlp = evm.rlp;
@@ -7,10 +8,7 @@ pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     const allocator = gpa.allocator();
 
-    // const list: rlp.Item = rlp.Item { .string = "hello" };
-    // list.print();
     var inner = rlp.ListBuilder.init(allocator);
-    // defer inner.deinit();
     try inner.appendString("hello");
     try inner.appendString("there");
 
@@ -19,6 +17,10 @@ pub fn main() !void {
     try inner.appendString("I am inside");
     try outer.appendList(inner.list);
     try outer.appendString("I am outside");
+
+    var bytes = ArrayList(u8).init(allocator);
+    _ = try outer.list.encode(&bytes);
+    std.debug.print("bytes: {any}\n", .{bytes.items});
 
     outer.print();
 
@@ -56,3 +58,6 @@ pub fn main() !void {
 // TODO: storage operations should take contract address from the environment
 // TODO: Think of Host errors that can happen and complete the Host functions return types
 // TODO: implement transaction validation
+// TODO: meta program to serialize and deserialize a zig struct that tries to guess the size and sets
+// the inital capacity of the ArrayList buffer
+// TODO: use fixed buffers for rlp encoding
