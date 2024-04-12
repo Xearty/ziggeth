@@ -2,16 +2,17 @@ const std = @import("std");
 const print = std.debug.print;
 const Word = @import("constants").Word;
 
-pub fn wordFromBigEndianBytes(bytes: []const u8) Word {
-    var result: Word = 0;
+pub fn intFromBigEndianBytes(comptime T: type, bytes: []const u8) T {
+    std.debug.assert(bytes.len <= @sizeOf(T));
+    var result: T = 0;
     for (bytes) |byte| result = (result << 8) | byte;
     return result;
 }
 
-pub fn bigEndianBytesFromWord(word: Word) [@sizeOf(Word)]u8 {
-    var buffer: [@sizeOf(Word)]u8 = undefined;
-    for (0..@sizeOf(Word)) |i| {
-        buffer[i] = @truncate(extractIthByte(Word, word, i));
+pub fn bigEndianBytesFromInt(comptime T: type, integer: T) [@sizeOf(T)]u8 {
+    var buffer: [@sizeOf(T)]u8 = undefined;
+    for (0..@sizeOf(T)) |i| {
+        buffer[i] = @truncate(extractIthByte(T, integer, i));
     }
     return buffer;
 }

@@ -29,7 +29,7 @@ pub fn store(self: *Self, value: Word, offset: usize) !void {
     const new_slots_count = self.inner.capacity - self.inner.items.len;
     self.inner.appendNTimesAssumeCapacity(0, new_slots_count);
 
-    const bytes = utils.bigEndianBytesFromWord(value);
+    const bytes = utils.bigEndianBytesFromInt(Word, value);
     for (0..@sizeOf(Word)) |i| self.inner.items[offset + i] = bytes[i];
 
     self.highest_used_address = @max(self.highest_used_address, offset);
@@ -45,7 +45,7 @@ pub fn store8(self: *Self, byte: u8, offset: usize) !void {
 
 pub fn load(self: *Self, offset: usize) Word {
     std.debug.assert(offset <= self.highest_used_address);
-    return utils.wordFromBigEndianBytes(self.inner.items[offset..offset+@sizeOf(Word)]);
+    return utils.intFromBigEndianBytes(Word, self.inner.items[offset..offset+@sizeOf(Word)]);
 }
 
 pub fn size(self: *Self) usize {
