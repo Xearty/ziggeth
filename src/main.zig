@@ -15,6 +15,7 @@ fn deploy_test_contract(host: *evm.Host) Address {
         @intFromEnum(evm.Opcode.PUSH1), 0x02,
         @intFromEnum(evm.Opcode.PUSH1), 0x00,
         @intFromEnum(evm.Opcode.SHA3),
+        @intFromEnum(evm.Opcode.CODESIZE),
     };
 
     return host.deploy_contract(bytecode).?;
@@ -43,6 +44,9 @@ pub fn main() !void {
     const decompiled_bytecode = try evm.decompile(allocator, bytecode);
     defer allocator.free(decompiled_bytecode);
     utils.printBoxed("Decompiled Bytecode", decompiled_bytecode);
+    for (bytecode) |byte| {
+        std.debug.print("0x{x}, ", .{byte});
+    }
 }
 
 // TODO: rename operands in instruction definitions

@@ -8,6 +8,7 @@ pub usingnamespace @import("definitions/stack.zig");
 pub usingnamespace @import("definitions/state.zig");
 pub usingnamespace @import("definitions/hash.zig");
 pub usingnamespace @import("definitions/host.zig");
+pub usingnamespace @import("definitions/contract.zig");
 pub usingnamespace @import("definitions/miscellaneous.zig");
 
 // returns the unquantified tag
