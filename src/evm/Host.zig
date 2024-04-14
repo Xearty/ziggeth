@@ -24,11 +24,11 @@ pub fn sload(self: *Self, key: Word) ?Word {
     return self.vtable.sload(self.ptr, key);
 }
 
-pub fn get_contract_code(self: *Self, address: Address) ?[]const u8 {
+pub fn getContractCode(self: *Self, address: Address) ?[]const u8 {
     return self.vtable.get_contract_code(self.ptr, address);
 }
 
-pub fn deploy_contract(self: *Self, code: []const u8) ?Address {
+pub fn deployContract(self: *Self, code: []const u8) ?Address {
     return self.vtable.deploy_contract(self.ptr, code);
 }
 

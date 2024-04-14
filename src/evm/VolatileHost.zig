@@ -31,8 +31,8 @@ pub fn host(self: *Self) Host {
         .vtable = &.{
             .sstore = sstore,
             .sload = sload,
-            .get_contract_code = get_contract_code,
-            .deploy_contract = deploy_contract,
+            .get_contract_code = getContractCode,
+            .deploy_contract = deployContract,
         },
     };
 }
@@ -47,12 +47,12 @@ fn sload(ctx: *anyopaque, key: Word) ?Word {
     return self.storage.load(key);
 }
 
-fn get_contract_code(ctx: *anyopaque, address: Address) ?[]const u8 {
+fn getContractCode(ctx: *anyopaque, address: Address) ?[]const u8 {
     const self: *Self = @ptrCast(@alignCast(ctx));
     return self.contracts.get(address).?;
 }
 
-fn deploy_contract(ctx: *anyopaque, code: []const u8) ?Address {
+fn deployContract(ctx: *anyopaque, code: []const u8) ?Address {
     const self: *Self = @ptrCast(@alignCast(ctx));
     var random_bytes: [@sizeOf(Address)]u8 = undefined;
     std.os.getrandom(&random_bytes) catch unreachable;

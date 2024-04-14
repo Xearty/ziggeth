@@ -7,7 +7,7 @@ const rlp = evm.rlp;
 const constants = @import("constants");
 const Address = constants.Address;
 
-fn deploy_test_contract(host: *evm.Host) Address {
+fn deployTestContract(host: *evm.Host) Address {
     const bytecode: []const u8 = &.{
         @intFromEnum(evm.Opcode.PUSH1), 48,
         @intFromEnum(evm.Opcode.PUSH1), 0x00,
@@ -23,7 +23,7 @@ fn deploy_test_contract(host: *evm.Host) Address {
         @intFromEnum(evm.Opcode.CODECOPY),
     };
 
-    return host.deploy_contract(bytecode).?;
+    return host.deployContract(bytecode).?;
 }
 
 pub fn main() !void {
@@ -36,8 +36,8 @@ pub fn main() !void {
 
     var evm_host = volatile_host.host();
 
-    const contract_address = deploy_test_contract(&evm_host);
-    const bytecode = evm_host.get_contract_code(contract_address).?;
+    const contract_address = deployTestContract(&evm_host);
+    const bytecode = evm_host.getContractCode(contract_address).?;
 
     var evm_interp = try evm.Interpreter.init(allocator, &evm_host, bytecode);
     defer evm_interp.deinit();
