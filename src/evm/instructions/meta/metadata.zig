@@ -6,6 +6,7 @@ const InstructionMetadata = struct {
 };
 
 pub const instructions_metadata = [_]InstructionMetadata{
+    // Stop and arithmetic operations
     .{ .mnemonic = "STOP",        .opcode = 0x00, },
     .{ .mnemonic = "ADD",         .opcode = 0x01, },
     .{ .mnemonic = "MUL",         .opcode = 0x02, },
@@ -18,6 +19,7 @@ pub const instructions_metadata = [_]InstructionMetadata{
     .{ .mnemonic = "MULMOD",      .opcode = 0x09, },
     .{ .mnemonic = "EXP",         .opcode = 0x0a, },
     .{ .mnemonic = "SIGNEXTEND",  .opcode = 0x0b, },
+    // Comparison & Bitwise Logic Operations
     .{ .mnemonic = "LT",          .opcode = 0x10, },
     .{ .mnemonic = "GT",          .opcode = 0x11, },
     .{ .mnemonic = "SLT",         .opcode = 0x12, },
@@ -32,12 +34,16 @@ pub const instructions_metadata = [_]InstructionMetadata{
     .{ .mnemonic = "SHL",         .opcode = 0x1b, },
     .{ .mnemonic = "SHR",         .opcode = 0x1c, },
     .{ .mnemonic = "SAR",         .opcode = 0x1d, },
+    // SHA3
     .{ .mnemonic = "SHA3",        .opcode = 0x20, },
+    // Environmental Information
     .{ .mnemonic = "CODESIZE",    .opcode = 0x38, },
     .{ .mnemonic = "CODECOPY",    .opcode = 0x39, },
     .{ .mnemonic = "EXTCODESIZE", .opcode = 0x3b, },
     .{ .mnemonic = "EXTCODECOPY", .opcode = 0x3c, },
     .{ .mnemonic = "EXTCODEHASH", .opcode = 0x3f, },
+    // Block Information
+    // Stack Memory Storage and Flow Operations
     .{ .mnemonic = "POP",         .opcode = 0x50, },
     .{ .mnemonic = "MLOAD",       .opcode = 0x51, },
     .{ .mnemonic = "MSTORE",      .opcode = 0x52, },
@@ -49,6 +55,7 @@ pub const instructions_metadata = [_]InstructionMetadata{
     .{ .mnemonic = "PC",          .opcode = 0x58, },
     .{ .mnemonic = "MSIZE",       .opcode = 0x59, },
     .{ .mnemonic = "JUMPDEST",    .opcode = 0x5b, },
+    // System operations
     .{ .mnemonic = "INVALID",     .opcode = 0xfe, },
 } ++ genPushInstructionDefinitions()
   ++ genDupInstructionDefinitions()

@@ -1,7 +1,7 @@
 const std = @import("std");
 const evm = @import("evm");
 const Opcode = evm.Opcode;
-const Word = @import("constants").Word;
+const Word = @import("types").Word;
 
 pub fn op(comptime opcode: Opcode) u8 {
     return @intFromEnum(opcode);

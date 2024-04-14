@@ -1,7 +1,7 @@
 const std = @import("std");
-const constants = @import("constants");
-const Word = constants.Word;
-const Address = constants.Address;
+const types = @import("types");
+const Word = types.Word;
+const Address = types.Address;
 const Storage = @import("Storage.zig");
 
 const Self = @This();

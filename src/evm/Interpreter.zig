@@ -1,6 +1,6 @@
 const std = @import("std");
 const Allocator = std.mem.Allocator;
-const Word = @import("constants").Word;
+const Word = @import("types").Word;
 const Stack = @import("stack.zig").Stack;
 const Host = @import("Host.zig");
 const Memory = @import("Memory.zig");

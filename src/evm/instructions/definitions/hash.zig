@@ -2,7 +2,7 @@ const std = @import("std");
 const evm = @import("evm");
 const Interpreter = evm.Interpreter;
 const utils = @import("evm_utils");
-const Word = @import("constants").Word;
+const Word = @import("types").Word;
 const Keccak256 = std.crypto.hash.sha3.Keccak256;
 
 pub inline fn sha3(interp: *Interpreter) !void {

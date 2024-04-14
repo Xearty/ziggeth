@@ -1,7 +1,7 @@
 const evm = @import("evm");
 const Interpreter = evm.Interpreter;
 const utils = @import("evm_utils");
-const Word = @import("constants").Word;
+const Word = @import("types").Word;
 
 pub inline fn pop(interp: *Interpreter) !void {
     _ = interp.stack.pop();

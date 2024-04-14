@@ -4,8 +4,8 @@ const ArrayList = std.ArrayList;
 const evm = @import("evm");
 const utils = @import("evm_utils");
 const rlp = evm.rlp;
-const constants = @import("constants");
-const Address = constants.Address;
+const types = @import("types");
+const Address = types.Address;
 
 fn deployTestContract(host: *evm.Host) Address {
     const bytecode: []const u8 = &.{
@@ -16,16 +16,6 @@ fn deployTestContract(host: *evm.Host) Address {
         @intFromEnum(evm.Opcode.PUSH1), 0x00,
         @intFromEnum(evm.Opcode.SHA3),
         @intFromEnum(evm.Opcode.CODESIZE),
-        @intFromEnum(evm.Opcode.PUSH1), 1,
-        @intFromEnum(evm.Opcode.ADD),
-        @intFromEnum(evm.Opcode.PUSH1), 0x00,
-        @intFromEnum(evm.Opcode.PUSH1), 0x00,
-        @intFromEnum(evm.Opcode.PUSH1), 0x01,
-        @intFromEnum(evm.Opcode.EXTCODECOPY),
-        @intFromEnum(evm.Opcode.PUSH1), 1,
-        @intFromEnum(evm.Opcode.EXTCODEHASH),
-        @intFromEnum(evm.Opcode.PUSH1), 1,
-        @intFromEnum(evm.Opcode.EXTCODESIZE),
     };
 
     return host.deployContract(bytecode).?;

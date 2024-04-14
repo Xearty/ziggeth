@@ -2,8 +2,8 @@ const std = @import("std");
 const evm = @import("evm");
 const Host = evm.Host;
 const Interpreter = evm.Interpreter;
-const constants = @import("constants");
-const Word = constants.Word;
+const types = @import("types");
+const Word = types.Word;
 
 pub inline fn sload(interp: *Interpreter) !void {
     const key = interp.stack.pop();

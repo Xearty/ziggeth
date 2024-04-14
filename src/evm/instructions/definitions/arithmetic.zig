@@ -1,8 +1,8 @@
 const evm = @import("evm");
 const Interpreter = evm.Interpreter;
-const constants = @import("constants");
-const Word = constants.Word;
-const SignedWord = constants.SignedWord;
+const types = @import("types");
+const Word = types.Word;
+const SignedWord = types.SignedWord;
 const math = @import("math");
 
 pub inline fn add(interp: *Interpreter) !void {

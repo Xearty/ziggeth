@@ -1,7 +1,7 @@
 const std = @import("std");
 const ArrayList = std.ArrayList;
 const Allocator = std.mem.Allocator;
-const Word = @import("constants").Word;
+const Word = @import("types").Word;
 const utils = @import("evm_utils");
 
 const Self = @This();

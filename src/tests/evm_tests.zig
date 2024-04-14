@@ -1,5 +1,5 @@
-const Word = @import("constants").Word;
-const SignedWord = @import("constants").SignedWord;
+const Word = @import("types").Word;
+const SignedWord = @import("types").SignedWord;
 const testing_utils = @import("test_utils.zig");
 const op = testing_utils.op;
 const volatileStackTestValue = testing_utils.volatileStackTestValue;

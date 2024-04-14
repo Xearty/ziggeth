@@ -2,7 +2,7 @@ const std = @import("std");
 const Keccak256 = std.crypto.hash.sha3.Keccak256;
 const Interpreter = @import("evm").Interpreter;
 const utils = @import("evm_utils");
-const Word = @import("constants").Word;
+const Word = @import("types").Word;
 
 pub inline fn codesize(interp: *Interpreter) !void {
     try interp.stack.push(interp.bytecode.len);

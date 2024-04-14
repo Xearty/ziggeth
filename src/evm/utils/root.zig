@@ -1,6 +1,6 @@
 const std = @import("std");
 const print = std.debug.print;
-const Word = @import("constants").Word;
+const Word = @import("types").Word;
 
 pub fn intFromBigEndianBytes(comptime T: type, bytes: []const u8) T {
     std.debug.assert(bytes.len <= @sizeOf(T));
