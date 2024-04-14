@@ -153,6 +153,11 @@ pub const instructions_metadata = [_]InstructionMetadata{
         .size = 1,
     },
     .{
+        .mnemonic = "EXTCODESIZE",
+        .opcode = 0x3b,
+        .size = 1,
+    },
+    .{
         .mnemonic = "EXTCODECOPY",
         .opcode = 0x3c,
         .size = 1,

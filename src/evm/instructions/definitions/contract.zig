@@ -8,6 +8,12 @@ pub inline fn codesize(interp: *Interpreter) !void {
     try interp.stack.push(interp.bytecode.len);
 }
 
+pub inline fn extcodesize(interp: *Interpreter) !void {
+    const address = interp.stack.pop();
+    const contract_code = interp.host.getContractCode(@truncate(address)).?;
+    try interp.stack.push(contract_code.len);
+}
+
 // TODO: do this without branching
 pub inline fn codecopy(interp: *Interpreter) !void {
     try codecopyImpl(interp, interp.bytecode);
