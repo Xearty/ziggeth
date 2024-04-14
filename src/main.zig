@@ -16,6 +16,11 @@ fn deploy_test_contract(host: *evm.Host) Address {
         @intFromEnum(evm.Opcode.PUSH1), 0x00,
         @intFromEnum(evm.Opcode.SHA3),
         @intFromEnum(evm.Opcode.CODESIZE),
+        @intFromEnum(evm.Opcode.PUSH1), 1,
+        @intFromEnum(evm.Opcode.ADD),
+        @intFromEnum(evm.Opcode.PUSH1), 0x00,
+        @intFromEnum(evm.Opcode.PUSH1), 0x00,
+        @intFromEnum(evm.Opcode.CODECOPY),
     };
 
     return host.deploy_contract(bytecode).?;
