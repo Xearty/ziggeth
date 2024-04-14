@@ -20,7 +20,8 @@ fn deployTestContract(host: *evm.Host) Address {
         @intFromEnum(evm.Opcode.ADD),
         @intFromEnum(evm.Opcode.PUSH1), 0x00,
         @intFromEnum(evm.Opcode.PUSH1), 0x00,
-        @intFromEnum(evm.Opcode.CODECOPY),
+        @intFromEnum(evm.Opcode.PUSH1), 0x01,
+        @intFromEnum(evm.Opcode.EXTCODECOPY),
         @intFromEnum(evm.Opcode.PUSH1), 1,
         @intFromEnum(evm.Opcode.EXTCODEHASH),
     };
