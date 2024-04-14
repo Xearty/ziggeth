@@ -36,16 +36,15 @@ pub fn extractQuantity(comptime opcode: opcodes.Opcode) u32 {
 }
 
 pub fn getSize(opcode: opcodes.Opcode) usize {
-    const defs = @import("meta/metadata.zig").instructions_metadata;
-
     return switch (opcode) {
         inline else => |tag| blk: {
-            inline for (defs) |def| {
-                @setEvalBranchQuota(10000);
-                if (comptime @intFromEnum(tag) == def.opcode) {
-                    break :blk def.size;
+            if (comptime isQuantified(tag)) |unquantified_tag| {
+                if (comptime std.mem.eql(u8, unquantified_tag, "PUSH")) {
+                    const quantity = comptime extractQuantity(tag);
+                    break :blk 1 + quantity;
                 }
             }
-        },
+            break :blk 1;
+        }
     };
 }
