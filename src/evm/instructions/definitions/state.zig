@@ -12,20 +12,28 @@ pub inline fn stop(interp: *Interpreter) !void {
 
 pub inline fn jump(interp: *Interpreter) !void {
     const destination = interp.stack.pop();
-    if (interp.bytecode[@truncate(destination)] != @intFromEnum(Opcode.JUMPDEST)) {
+
+    var frame = interp.frames.top().?;
+    const code = frame.executing_contract.code;
+
+    if (code[@truncate(destination)] != @intFromEnum(Opcode.JUMPDEST)) {
         return error.InvalidJumpLocation;
     }
-    interp.program_counter = @as(usize, @truncate(destination));
+    frame.program_counter = @as(usize, @truncate(destination));
 }
 
 pub inline fn jumpi(interp: *Interpreter) JumpError!void {
     const destination = interp.stack.pop();
     const condition = interp.stack.pop();
-    if (interp.bytecode[@truncate(destination)] != @intFromEnum(Opcode.JUMPDEST)) {
+
+    var frame = interp.frames.top().?;
+    const code = frame.executing_contract.code;
+
+    if (code[@truncate(destination)] != @intFromEnum(Opcode.JUMPDEST)) {
         return error.InvalidJumpLocation;
     }
     if (condition != 0) {
-        interp.program_counter = @as(usize, @truncate(destination));
+        frame.program_counter = @as(usize, @truncate(destination));
     }
 }
 
@@ -37,7 +45,8 @@ pub inline fn jumpdest(interp: *Interpreter) !void {
 
 pub inline fn pc(interp: *Interpreter) !void {
     // Program counter is advanced before executing the instruction
-    try interp.stack.push(interp.program_counter - 1);
+    const frame = interp.frames.top().?;
+    try interp.stack.push(frame.program_counter - 1);
 }
 
 pub fn mload(interp: *Interpreter) !void {

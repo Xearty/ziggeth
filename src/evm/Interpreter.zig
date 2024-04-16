@@ -1,6 +1,9 @@
 const std = @import("std");
+const ArrayList = std.ArrayList;
 const Allocator = std.mem.Allocator;
 const Word = @import("types").Word;
+const Contract = @import("types").Contract;
+const Transaction = @import("types").Transaction;
 const Stack = @import("stack.zig").Stack;
 const Host = @import("Host.zig");
 const Memory = @import("Memory.zig");
@@ -12,18 +15,19 @@ const utils = @import("evm_utils");
 const Interpreter = @This();
 const StackType = Stack(Word);
 
-program_counter: usize,
-bytecode: []const u8,
+// bytecode: []const u8,
+frames: Stack(Frame),
 stack: StackType,
 memory: Memory,
 host: *Host,
 status: VMStatus,
 allocator: Allocator,
 
-pub fn init(allocator: Allocator, host: *Host, bytecode: []const u8) !Interpreter {
+pub fn init(allocator: Allocator, host: *Host) !Interpreter {
     return .{
-        .program_counter = 0,
-        .bytecode = bytecode,
+        // .program_counter = 0,
+        // .bytecode = bytecode,
+        .frames = Stack(Frame).init(allocator),
         .stack = StackType.init(allocator),
         .memory = try Memory.init(allocator),
         .host = host,
@@ -35,11 +39,27 @@ pub fn init(allocator: Allocator, host: *Host, bytecode: []const u8) !Interprete
 pub fn deinit(self: *Interpreter) void {
     self.stack.deinit();
     self.memory.deinit();
+    self.frames.deinit();
 }
 
-pub fn execute(self: *Interpreter) !void {
+pub fn execute(self: *Interpreter, tx: Transaction) !void {
+    const account = self.host.getAccount(tx.to).?;
+    const contract = switch (account) {
+        .contract => |contract| contract,
+        .eoa => |_| unreachable,
+    };
+
+    const base_frame = Frame {
+        .executing_contract = contract,
+        .program_counter = 0,
+    };
+    try self.frames.push(base_frame);
+
     while (self.status == .RUNNING) {
-        const opcode = opcodes.fromByte(self.bytecode[self.program_counter]);
+        const frame = self.frames.top().?;
+        const code = frame.executing_contract.code;
+        const program_counter = frame.program_counter;
+        const opcode = opcodes.fromByte(code[program_counter]);
         self.advanceProgramCounter(instructions.getSize(opcode));
         try self.executeInstruction(opcode);
     }
@@ -66,13 +86,22 @@ fn executeInstruction(self: *Interpreter, opcode: Opcode) !void {
 }
 
 fn advanceProgramCounter(self: *Interpreter, leap: usize) void {
-    self.program_counter += leap;
-    if (self.program_counter >= self.bytecode.len) {
+    var frame = self.frames.top().?;
+    frame.program_counter += leap;
+    if (frame.program_counter >= frame.executing_contract.code.len) {
         self.status = .HALTED;
     }
 }
+
+const Frame = struct {
+    executing_contract: Contract,
+    program_counter: usize,
+};
+
+ // TODO: impl RETURNED state and stick it in frame
 pub const VMStatus = enum {
     RUNNING,
     HALTED,
+    RETURNED,
 };
 

@@ -1,3 +1,4 @@
+const std = @import("std");
 const evm = @import("evm");
 const Interpreter = evm.Interpreter;
 const utils = @import("evm_utils");
@@ -8,7 +9,11 @@ pub inline fn pop(interp: *Interpreter) !void {
 }
 
 pub inline fn push(interp: *Interpreter, count: u32) !void {
-    const bytes = interp.bytecode[interp.program_counter-count..interp.program_counter];
+    const frame = interp.frames.top().?;
+    const code = frame.executing_contract.code;
+    const program_counter = frame.program_counter;
+
+    const bytes = code[program_counter-count..program_counter];
     const value = utils.intFromBigEndianBytes(Word, bytes);
     try interp.stack.push(value);
 }

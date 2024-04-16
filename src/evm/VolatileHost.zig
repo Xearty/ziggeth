@@ -5,24 +5,23 @@ const utils = @import("evm_utils");
 const types = @import("types");
 const Word = types.Word;
 const Address = types.Address;
+const WorldState = types.WorldState;
+const Account = types.Account;
+const Contract = types.Contract;
 const Storage = @import("Storage.zig");
 
 const Self = @This();
-const ContractsMappingType = std.hash_map.AutoHashMap(Address, []const u8);
 
-storage: Storage,
-contracts: ContractsMappingType,
-
+world_state: WorldState,
 
 pub fn init(allocator: Allocator) Self {
     return .{
-        .storage = Storage.init(allocator),
-        .contracts = ContractsMappingType.init(allocator),
+        .world_state = WorldState.init(allocator),
     };
 }
 
 pub fn deinit(self: *Self) void {
-    self.storage.deinit();
+    self.world_state.deinit();
 }
 
 pub fn host(self: *Self) Host {
@@ -33,31 +32,60 @@ pub fn host(self: *Self) Host {
             .sload = sload,
             .get_contract_code = getContractCode,
             .deploy_contract = deployContract,
+            .get_account = getAccount,
         },
     };
 }
 
-fn sstore(ctx: *anyopaque, key: Word, value: Word) void {
+fn sstore(ctx: *anyopaque, address: Address, key: Word, value: Word) void {
     const self: *Self = @ptrCast(@alignCast(ctx));
-    self.storage.store(key, value) catch unreachable;
+    var account = self.world_state.get(address).?;
+    switch (account) {
+        .contract => |*contract| contract.storage.store(key, value) catch unreachable,
+        .eoa => |_| unreachable,
+    }
 }
 
-fn sload(ctx: *anyopaque, key: Word) ?Word {
+fn sload(ctx: *anyopaque, address: Address, key: Word) ?Word {
     const self: *Self = @ptrCast(@alignCast(ctx));
-    return self.storage.load(key);
+    var account = self.world_state.get(address).?;
+    switch (account) {
+        .contract => |*contract| return contract.storage.load(key),
+        .eoa => |_| unreachable,
+    }
 }
 
 fn getContractCode(ctx: *anyopaque, address: Address) ?[]const u8 {
     const self: *Self = @ptrCast(@alignCast(ctx));
-    return self.contracts.get(address).?;
+    const account = self.world_state.get(address).?;
+    switch (account) {
+        .contract => |contract| return contract.code,
+        .eoa => |_| return null,
+    }
 }
 
-fn deployContract(ctx: *anyopaque, code: []const u8) ?Address {
+fn getAccount(ctx: *anyopaque, address: Address) ?Account {
+    const self: *Self = @ptrCast(@alignCast(ctx));
+    return self.world_state.get(address);
+}
+
+// TODO: there must be init code
+fn deployContract(ctx: *anyopaque, allocator: Allocator, code: []const u8) ?Address {
     const self: *Self = @ptrCast(@alignCast(ctx));
     var random_bytes: [@sizeOf(Address)]u8 = undefined;
     std.os.getrandom(&random_bytes) catch unreachable;
     const address = utils.intFromBigEndianBytes(Address, &random_bytes);
-    self.contracts.put(address, code) catch unreachable;
+
+    const contract = Account {
+        .contract = .{
+            .address = address,
+            .balance = 0,
+            .nonce = 0,
+            .code = code,
+            .storage = Storage.init(allocator),
+        },
+    };
+    self.world_state.put(address, contract) catch unreachable;
 
     std.debug.print("Contract deployed at address {}\n", .{address});
     return address;

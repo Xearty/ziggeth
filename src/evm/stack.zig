@@ -24,6 +24,11 @@ pub fn Stack(comptime T: type) type {
             return self.inner.getLastOrNull();
         }
 
+        pub fn top(self: *Self) ?*T {
+            if (self.inner.items.len == 0) return null;
+            return &self.inner.items[self.inner.items.len - 1];
+        }
+
         pub fn push(self: *Self, value: T) !void {
             try self.inner.append(value);
         }

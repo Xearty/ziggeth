@@ -20,7 +20,9 @@ pub fn decompile(allocator: Allocator, bytecode: []const u8) ![]u8 {
         const counter_len = utils.getNumberLength(usize, counter);
         for (counter_len..number_column_len+1) |_| try decompiled_bytecode.append(' ');
 
+        std.debug.print("counter: {}\n", .{counter});
         const opcode = opcodes.fromByte(bytecode[counter]);
+        std.debug.print("offset: {} | byte: 0x{x} | opcode: {}\n", .{counter, bytecode[counter], opcode});
         try decompiled_bytecode.appendSlice(@tagName(opcode));
 
         const args_offset = counter + 1;

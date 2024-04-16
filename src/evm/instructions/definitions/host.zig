@@ -7,7 +7,7 @@ const Word = types.Word;
 
 pub inline fn sload(interp: *Interpreter) !void {
     const key = interp.stack.pop();
-    const maybe_value = interp.host.sload(key);
+    const maybe_value = interp.host.sload(69, key);
     if (maybe_value) |value| {
         try interp.stack.push(value);
     } else {
@@ -20,5 +20,5 @@ pub inline fn sload(interp: *Interpreter) !void {
 pub inline fn sstore(interp: *Interpreter) !void {
     const key = interp.stack.pop();
     const value = @as(Word, @bitCast(interp.stack.pop()));
-    interp.host.sstore(key, value);
+    interp.host.sstore(69, key, value);
 }

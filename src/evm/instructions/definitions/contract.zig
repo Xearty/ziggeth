@@ -5,7 +5,8 @@ const utils = @import("evm_utils");
 const Word = @import("types").Word;
 
 pub inline fn codesize(interp: *Interpreter) !void {
-    try interp.stack.push(interp.bytecode.len);
+    const code = interp.frames.top().?.executing_contract.code;
+    try interp.stack.push(code.len);
 }
 
 pub inline fn extcodesize(interp: *Interpreter) !void {
@@ -16,7 +17,8 @@ pub inline fn extcodesize(interp: *Interpreter) !void {
 
 // TODO: do this without branching
 pub inline fn codecopy(interp: *Interpreter) !void {
-    try codecopyImpl(interp, interp.bytecode);
+    const code = interp.frames.top().?.executing_contract.code;
+    try codecopyImpl(interp, code);
 }
 
 pub inline fn extcodecopy(interp: *Interpreter) !void {
@@ -32,6 +34,18 @@ pub inline fn extcodehash(interp: *Interpreter) !void {
     var hash: [32]u8 = undefined;
     Keccak256.hash(contract_code, &hash, .{});
     try interp.stack.push(utils.intFromBigEndianBytes(Word, &hash));
+}
+
+pub inline fn callvalue(interp: *Interpreter) !void {
+    interp.status = .HALTED;
+}
+
+pub inline fn calldatasize(interp: *Interpreter) !void {
+    interp.status = .HALTED;
+}
+
+pub inline fn calldataload(interp: *Interpreter) !void {
+    interp.status = .HALTED;
 }
 
 fn codecopyImpl(interp: *Interpreter, bytecode: []const u8) !void {

@@ -9,6 +9,7 @@ pub usingnamespace @import("definitions/state.zig");
 pub usingnamespace @import("definitions/hash.zig");
 pub usingnamespace @import("definitions/host.zig");
 pub usingnamespace @import("definitions/contract.zig");
+pub usingnamespace @import("definitions/logging.zig");
 pub usingnamespace @import("definitions/miscellaneous.zig");
 
 // returns the unquantified tag
@@ -38,6 +39,7 @@ pub fn extractQuantity(comptime opcode: opcodes.Opcode) u32 {
 pub fn getSize(opcode: opcodes.Opcode) usize {
     return switch (opcode) {
         inline else => |tag| blk: {
+            @setEvalBranchQuota(10000);
             if (comptime isQuantified(tag)) |unquantified_tag| {
                 if (comptime std.mem.eql(u8, unquantified_tag, "PUSH")) {
                     const quantity = comptime extractQuantity(tag);
