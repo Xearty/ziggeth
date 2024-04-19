@@ -40,6 +40,7 @@ pub const instructions_metadata = [_]InstructionMetadata{
     .{ .mnemonic = "CALLVALUE",    .opcode = 0x34, },
     .{ .mnemonic = "CALLDATALOAD", .opcode = 0x35, }, // placeholder
     .{ .mnemonic = "CALLDATASIZE", .opcode = 0x36, },
+    .{ .mnemonic = "CALLDATACOPY", .opcode = 0x37, },
     .{ .mnemonic = "CODESIZE",     .opcode = 0x38, },
     .{ .mnemonic = "CODECOPY",     .opcode = 0x39, },
     .{ .mnemonic = "EXTCODESIZE",  .opcode = 0x3b, },

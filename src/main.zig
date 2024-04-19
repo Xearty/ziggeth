@@ -31,17 +31,10 @@ fn hexToBytesOwned(allocator: Allocator, hex_string: []const u8) ![]u8 {
 
 fn deployTestContract(allocator: Allocator, host: *evm.Host) Address {
     const bytecode: []const u8 = &.{
-        @intFromEnum(evm.Opcode.PUSH1), 48,
+        @intFromEnum(evm.Opcode.CALLDATASIZE),
         @intFromEnum(evm.Opcode.PUSH1), 0x00,
-        @intFromEnum(evm.Opcode.MSTORE8),
-        @intFromEnum(evm.Opcode.PUSH1), 0x02,
-        @intFromEnum(evm.Opcode.PUSH1), 0x00,
-        @intFromEnum(evm.Opcode.SHA3),
-        @intFromEnum(evm.Opcode.CODESIZE),
-        @intFromEnum(evm.Opcode.CALLVALUE),
-        @intFromEnum(evm.Opcode.PUSH1), 0x02,
-        @intFromEnum(evm.Opcode.PUSH1), 0x00,
-        @intFromEnum(evm.Opcode.RETURN),
+        @intFromEnum(evm.Opcode.PUSH1), 0x01,
+        @intFromEnum(evm.Opcode.CALLDATACOPY),
     };
 
     return host.deployContract(allocator, bytecode).?;

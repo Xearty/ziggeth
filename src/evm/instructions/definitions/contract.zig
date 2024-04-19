@@ -18,13 +18,13 @@ pub inline fn extcodesize(interp: *Interpreter) !void {
 // TODO: do this without branching
 pub inline fn codecopy(interp: *Interpreter) !void {
     const code = interp.frames.top().?.executing_contract.code;
-    try codecopyImpl(interp, code);
+    try copyToMemory(interp, code);
 }
 
 pub inline fn extcodecopy(interp: *Interpreter) !void {
     const address = interp.stack.pop();
     const bytecode = interp.host.getContractCode(@truncate(address)).?;
-    try codecopyImpl(interp, bytecode);
+    try copyToMemory(interp, bytecode);
 }
 
 pub inline fn extcodehash(interp: *Interpreter) !void {
@@ -46,20 +46,26 @@ pub inline fn calldatasize(interp: *Interpreter) !void {
     try interp.stack.push(frame.call_data.len);
 }
 
+pub inline fn calldatacopy(interp: *Interpreter) !void {
+    const frame = interp.frames.top().?;
+    try copyToMemory(interp, frame.call_data);
+}
+
 pub inline fn calldataload(interp: *Interpreter) !void {
     interp.status = .HALTED;
 }
 
-fn codecopyImpl(interp: *Interpreter, bytecode: []const u8) !void {
+// TODO: move this to Memory.zig
+fn copyToMemory(interp: *Interpreter, bytes: []const u8) !void {
     const dest_offset = interp.stack.pop();
     const offset = interp.stack.pop();
     const size: usize = @intCast(interp.stack.pop());
 
     for (0..size) |index| {
         const memoryIndex: usize = @truncate(dest_offset + index);
-        const bytecodeIndex: usize = @truncate(offset + index);
-        if (bytecodeIndex < bytecode.len) {
-            try interp.memory.store8(bytecode[bytecodeIndex], memoryIndex);
+        const bytesIndex: usize = @truncate(offset + index);
+        if (bytesIndex < bytes.len) {
+            try interp.memory.store8(bytes[bytesIndex], memoryIndex);
         } else {
             try interp.memory.store8(0x00, memoryIndex);
         }
