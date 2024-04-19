@@ -15,23 +15,22 @@ const utils = @import("evm_utils");
 const Interpreter = @This();
 const StackType = Stack(Word);
 
-// bytecode: []const u8,
 frames: Stack(Frame),
 stack: StackType,
 memory: Memory,
 host: *Host,
 status: VMStatus,
+return_data: ?[]const u8,
 allocator: Allocator,
 
 pub fn init(allocator: Allocator, host: *Host) !Interpreter {
     return .{
-        // .program_counter = 0,
-        // .bytecode = bytecode,
         .frames = Stack(Frame).init(allocator),
         .stack = StackType.init(allocator),
         .memory = try Memory.init(allocator),
         .host = host,
         .status = .RUNNING,
+        .return_data = null,
         .allocator = allocator,
     };
 }
@@ -40,9 +39,10 @@ pub fn deinit(self: *Interpreter) void {
     self.stack.deinit();
     self.memory.deinit();
     self.frames.deinit();
+    if (self.return_data) |memory| self.allocator.free(memory);
 }
 
-pub fn execute(self: *Interpreter, tx: Transaction) !void {
+pub fn execute(self: *Interpreter, tx: Transaction) !?[]const u8 {
     const account = self.host.getAccount(tx.to).?;
     const contract = switch (account) {
         .contract => |contract| contract,
@@ -52,6 +52,7 @@ pub fn execute(self: *Interpreter, tx: Transaction) !void {
     const base_frame = Frame {
         .executing_contract = contract,
         .program_counter = 0,
+        .status = .Executing,
     };
     try self.frames.push(base_frame);
 
@@ -60,9 +61,29 @@ pub fn execute(self: *Interpreter, tx: Transaction) !void {
         const code = frame.executing_contract.code;
         const program_counter = frame.program_counter;
         const opcode = opcodes.fromByte(code[program_counter]);
+
         self.advanceProgramCounter(instructions.getSize(opcode));
         try self.executeInstruction(opcode);
+
+        if (frame.status == .Returned) {
+            _ = self.frames.pop();
+            if (self.frames.size() == 1) {
+                self.status = .HALTED;
+            }
+        }
     }
+
+    return self.return_data;
+}
+
+pub fn setReturnData(self: *Interpreter, data: []const u8) !void {
+    if (self.return_data) |memory| self.allocator.free(memory);
+    self.return_data = try self.allocator.dupe(u8, data);
+}
+
+pub fn clearReturnData(self: *Interpreter) void {
+    if (self.return_data) |memory| self.allocator.free(memory);
+    self.return_data = null;
 }
 
 pub fn prettyPrint(self: *const Interpreter) !void {
@@ -96,6 +117,12 @@ fn advanceProgramCounter(self: *Interpreter, leap: usize) void {
 const Frame = struct {
     executing_contract: Contract,
     program_counter: usize,
+    status: FrameStatus,
+};
+
+pub const FrameStatus = enum {
+    Executing,
+    Returned,
 };
 
  // TODO: impl RETURNED state and stick it in frame

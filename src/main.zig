@@ -38,6 +38,9 @@ fn deployTestContract(allocator: Allocator, host: *evm.Host) Address {
         @intFromEnum(evm.Opcode.PUSH1), 0x00,
         @intFromEnum(evm.Opcode.SHA3),
         @intFromEnum(evm.Opcode.CODESIZE),
+        @intFromEnum(evm.Opcode.PUSH1), 0x02,
+        @intFromEnum(evm.Opcode.PUSH1), 0x00,
+        @intFromEnum(evm.Opcode.RETURN),
     };
 
     return host.deployContract(allocator, bytecode).?;
@@ -72,12 +75,13 @@ pub fn main() !void {
 
     const transaction = Transaction {
         .from = 69,
-        .to =contract_address,
+        .to = contract_address,
         .nonce = 0,
         .value = 0,
         .data = &.{},
     };
-    try evm_interp.execute(transaction);
+    const returned_bytes = try evm_interp.execute(transaction);
+    std.debug.print("final return: {any}\n", .{returned_bytes});
 
     // try volatile_host.storage.prettyPrint();
     try evm_interp.prettyPrint();

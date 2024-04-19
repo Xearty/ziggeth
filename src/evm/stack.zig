@@ -37,6 +37,10 @@ pub fn Stack(comptime T: type) type {
             return self.inner.pop();
         }
 
+        pub fn size(self: *Self) usize {
+            return self.inner.items.len;
+        }
+
         pub fn dup(self: *Self, offset: usize) !void {
             const length = self.inner.items.len;
             const dupped = self.inner.items[length - offset];

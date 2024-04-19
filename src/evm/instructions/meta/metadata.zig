@@ -60,7 +60,7 @@ pub const instructions_metadata = [_]InstructionMetadata{
     .{ .mnemonic = "JUMPDEST",     .opcode = 0x5b, },
     // Logging Operations
     // System Operations
-    .{ .mnemonic = "RETURN",       .opcode = 0xf3, }, // placeholder
+    .{ .mnemonic = "RETURN",       .opcode = 0xf3, },
     .{ .mnemonic = "REVERT",       .opcode = 0xfd, }, // placeholder
     .{ .mnemonic = "INVALID",      .opcode = 0xfe, },
 } ++ genPushInstructionDefinitions()
