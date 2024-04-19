@@ -53,6 +53,7 @@ pub fn execute(self: *Interpreter, tx: Transaction) !?[]const u8 {
         .executing_contract = contract,
         .program_counter = 0,
         .status = .Executing,
+        .call_data = tx.data,
     };
     try self.frames.push(base_frame);
 
@@ -118,6 +119,7 @@ const Frame = struct {
     executing_contract: Contract,
     program_counter: usize,
     status: FrameStatus,
+    call_data: []const u8,
 };
 
 pub const FrameStatus = enum {
