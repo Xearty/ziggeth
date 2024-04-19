@@ -37,7 +37,7 @@ pub const instructions_metadata = [_]InstructionMetadata{
     // SHA3
     .{ .mnemonic = "SHA3",         .opcode = 0x20, },
     // Environmental Information
-    .{ .mnemonic = "CALLVALUE",    .opcode = 0x34, }, // placeholder
+    .{ .mnemonic = "CALLVALUE",    .opcode = 0x34, },
     .{ .mnemonic = "CALLDATALOAD", .opcode = 0x35, }, // placeholder
     .{ .mnemonic = "CALLDATASIZE", .opcode = 0x36, },
     .{ .mnemonic = "CODESIZE",     .opcode = 0x38, },

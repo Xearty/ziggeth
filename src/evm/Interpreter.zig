@@ -54,6 +54,7 @@ pub fn execute(self: *Interpreter, tx: Transaction) !?[]const u8 {
         .program_counter = 0,
         .status = .Executing,
         .call_data = tx.data,
+        .call_value = tx.value,
     };
     try self.frames.push(base_frame);
 
@@ -120,6 +121,7 @@ const Frame = struct {
     program_counter: usize,
     status: FrameStatus,
     call_data: []const u8,
+    call_value: u64,
 };
 
 pub const FrameStatus = enum {

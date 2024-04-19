@@ -37,7 +37,8 @@ pub inline fn extcodehash(interp: *Interpreter) !void {
 }
 
 pub inline fn callvalue(interp: *Interpreter) !void {
-    interp.status = .HALTED;
+    const frame = interp.frames.top().?;
+    try interp.stack.push(frame.call_value);
 }
 
 pub inline fn calldatasize(interp: *Interpreter) !void {

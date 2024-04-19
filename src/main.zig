@@ -38,7 +38,7 @@ fn deployTestContract(allocator: Allocator, host: *evm.Host) Address {
         @intFromEnum(evm.Opcode.PUSH1), 0x00,
         @intFromEnum(evm.Opcode.SHA3),
         @intFromEnum(evm.Opcode.CODESIZE),
-        @intFromEnum(evm.Opcode.CALLDATASIZE),
+        @intFromEnum(evm.Opcode.CALLVALUE),
         @intFromEnum(evm.Opcode.PUSH1), 0x02,
         @intFromEnum(evm.Opcode.PUSH1), 0x00,
         @intFromEnum(evm.Opcode.RETURN),
@@ -78,7 +78,7 @@ pub fn main() !void {
         .from = 69,
         .to = contract_address,
         .nonce = 0,
-        .value = 0,
+        .value = 100,
         .data = &.{1, 5},
     };
     const returned_bytes = try evm_interp.execute(transaction);
