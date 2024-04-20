@@ -68,12 +68,12 @@ pub const instructions_metadata = [_]InstructionMetadata{
   ++ genDupInstructionDefinitions()
   ++ genSwapInstructionDefinitions();
 
-fn genPushInstructionDefinitions() [32]InstructionMetadata {
-    var definitions: [32]InstructionMetadata = undefined;
+fn genPushInstructionDefinitions() [33]InstructionMetadata {
+    var definitions: [33]InstructionMetadata = undefined;
 
     inline for (&definitions, 0..) |*def, index| def.* = .{
-        .mnemonic = std.fmt.comptimePrint("PUSH{}", .{index + 1}),
-        .opcode = 0x60 + index,
+        .mnemonic = std.fmt.comptimePrint("PUSH{}", .{index}),
+        .opcode = 0x5f + index,
     };
 
     comptime return definitions;
