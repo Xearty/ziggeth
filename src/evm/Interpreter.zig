@@ -69,7 +69,7 @@ pub fn execute(self: *Interpreter, tx: Transaction) !?[]const u8 {
 
         if (frame.status == .Returned) {
             _ = self.frames.pop();
-            if (self.frames.size() == 1) {
+            if (self.frames.size() == 0) {
                 self.status = .HALTED;
             }
         }
