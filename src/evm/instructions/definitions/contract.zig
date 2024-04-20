@@ -52,7 +52,18 @@ pub inline fn calldatacopy(interp: *Interpreter) !void {
 }
 
 pub inline fn calldataload(interp: *Interpreter) !void {
-    interp.status = .HALTED;
+    const offset: usize = @intCast(interp.stack.pop());
+
+    const frame = interp.frames.top().?;
+    var bytes: [@sizeOf(Word)]u8 = .{0} ** @sizeOf(Word);
+
+    const end = @min(offset + @sizeOf(Word), frame.call_data.len);
+    for (offset..end) |call_data_index| {
+        const index = call_data_index - offset;
+        bytes[index] = frame.call_data[call_data_index];
+    }
+
+    try interp.stack.push(utils.intFromBigEndianBytes(Word, &bytes));
 }
 
 // TODO: move this to Memory.zig
