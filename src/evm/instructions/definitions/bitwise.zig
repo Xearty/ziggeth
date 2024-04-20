@@ -37,7 +37,7 @@ pub inline fn not(interp: *Interpreter) !void {
 pub inline fn byte(interp: *Interpreter) !void {
     const operand1 = interp.stack.pop();
     const operand2 = interp.stack.pop();
-    try interp.stack.push(utils.extractIthByte(Word, operand2, operand1));
+    try interp.stack.push(utils.extractIthByte(Word, operand2, @truncate(operand1)));
 }
 
 pub inline fn shl(interp: *Interpreter) !void {

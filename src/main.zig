@@ -8,26 +8,7 @@ const rlp = evm.rlp;
 const types = @import("types");
 const Address = types.Address;
 const Transaction = types.Transaction;
-
-fn hexCharacterToDecimal(hex_char: u8) u8 {
-    if (hex_char >= '0' and hex_char <= '9') return hex_char - '0';
-    if (hex_char >= 'a' and hex_char <= 'f') return hex_char - 'a' + 10;
-    unreachable;
-}
-
-fn hexToBytesOwned(allocator: Allocator, hex_string: []const u8) ![]u8 {
-    const bytes_count = hex_string.len / 2;
-    var buffer = try allocator.alloc(u8, bytes_count);
-
-    var offset: usize = 0;
-    while (offset < bytes_count) : (offset += 1) {
-        const first_char = hexCharacterToDecimal(hex_string[offset * 2]);
-        const second_char = hexCharacterToDecimal(hex_string[offset * 2 + 1]);
-        buffer[offset] = first_char * 16 + second_char;
-    }
-
-    return buffer;
-}
+const BinaryBufferBuilder = utils.BinaryBufferBuilder;
 
 fn deployTestContract(allocator: Allocator, host: *evm.Host) Address {
     const bytecode: []const u8 = &.{
@@ -55,7 +36,7 @@ pub fn main() !void {
     const allocator = gpa.allocator();
 
     const bytecode_file = @embedFile("bytecode");
-    const bytecode = try hexToBytesOwned(allocator, bytecode_file[0..bytecode_file.len-1]);
+    const bytecode = try utils.hexToBytesOwned(allocator, bytecode_file[0..bytecode_file.len-1]);
     defer allocator.free(bytecode);
 
     var volatile_host = evm.VolatileHost.init(allocator);
@@ -73,13 +54,20 @@ pub fn main() !void {
 
     const contract_address = try deployContract(allocator, &evm_host, contract_creation_transaction);
 
+    const signature = "test(uint256,uint256)";
+    const selector = utils.computeFunctionSelector(signature);
+
+    var call_data_builder = BinaryBufferBuilder.init(allocator);
+    try call_data_builder.appendInt(u32, selector);
+    try call_data_builder.appendInt(u256, 3);
+    try call_data_builder.appendInt(u256, 5);
+
     const message_call_transaction = Transaction {
         .from = 69,
         .to = contract_address,
         .nonce = 1,
         .value = 0,
-        // 17 * 5
-        .data = try hexToBytesOwned(allocator, "eb8ac92100000000000000000000000000000000000000000000000000000000000000110000000000000000000000000000000000000000000000000000000000000005"),
+        .data = try call_data_builder.toOwned(),
     };
     var evm_interp = try evm.Interpreter.init(allocator, &evm_host);
     defer evm_interp.deinit();

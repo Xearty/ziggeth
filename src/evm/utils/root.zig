@@ -1,6 +1,16 @@
 const std = @import("std");
+const Allocator = std.mem.Allocator;
+const Keccak256 = std.crypto.hash.sha3.Keccak256;
 const print = std.debug.print;
 const Word = @import("types").Word;
+
+pub const BinaryBufferBuilder = @import("BinaryBufferBuilder.zig");
+
+pub fn computeFunctionSelector(signature: []const u8) u32 {
+    var hash: [32]u8 = undefined;
+    Keccak256.hash(signature, &hash, .{});
+    return intFromBigEndianBytes(u32, hash[0..4]);
+}
 
 pub fn intFromBigEndianBytes(comptime T: type, bytes: []const u8) T {
     std.debug.assert(bytes.len <= @sizeOf(T));
@@ -12,8 +22,28 @@ pub fn intFromBigEndianBytes(comptime T: type, bytes: []const u8) T {
 pub fn bigEndianBytesFromInt(comptime T: type, integer: T) [@sizeOf(T)]u8 {
     var buffer: [@sizeOf(T)]u8 = undefined;
     for (0..@sizeOf(T)) |i| {
-        buffer[i] = @truncate(extractIthByte(T, integer, i));
+        buffer[i] = @truncate(extractIthByte(T, integer, @intCast(i)));
     }
+    return buffer;
+}
+
+pub fn hexCharacterToDecimal(hex_char: u8) u8 {
+    if (hex_char >= '0' and hex_char <= '9') return hex_char - '0';
+    if (hex_char >= 'a' and hex_char <= 'f') return hex_char - 'a' + 10;
+    unreachable;
+}
+
+pub fn hexToBytesOwned(allocator: Allocator, hex_string: []const u8) ![]u8 {
+    const bytes_count = hex_string.len / 2;
+    var buffer = try allocator.alloc(u8, bytes_count);
+
+    var offset: usize = 0;
+    while (offset < bytes_count) : (offset += 1) {
+        const first_char = hexCharacterToDecimal(hex_string[offset * 2]);
+        const second_char = hexCharacterToDecimal(hex_string[offset * 2 + 1]);
+        buffer[offset] = first_char * 16 + second_char;
+    }
+
     return buffer;
 }
 
@@ -46,7 +76,8 @@ pub fn printBits(value: Word) void {
 
 // TODO: maybe do this return a u8
 pub fn extractIthByte(comptime T: type, value: T, i: T) T {
-    return (value >> (248 - @as(u8, @truncate(i)) * 8)) & 0xff;
+    const ShiftType = std.math.Log2Int(T);
+    return (value >> @as(ShiftType, @truncate((248 - i * 8)))) & 0xff;
 }
 
 fn determineLongestLine(str: []const u8) usize {
