@@ -81,7 +81,7 @@ fn deployContract(ctx: *anyopaque, allocator: Allocator, code: []const u8) ?Addr
             .address = address,
             .balance = 0,
             .nonce = 0,
-            .code = code,
+            .code = allocator.dupe(u8, code) catch unreachable,
             .storage = Storage.init(allocator),
         },
     };
