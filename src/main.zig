@@ -40,41 +40,51 @@ fn deployTestContract(allocator: Allocator, host: *evm.Host) Address {
     return host.deployContract(allocator, bytecode).?;
 }
 
-fn stripContractMetadata(bytecode: []u8) []u8 {
-    const metadata_size = 54;
-    return bytecode[0..bytecode.len-metadata_size];
+fn deployContract(allocator: Allocator, host: *evm.Host, tx: Transaction) !Address {
+    std.debug.assert(tx.to == 0);
+
+    var evm_interp = try evm.Interpreter.init(allocator, host);
+    defer evm_interp.deinit();
+
+    const bytecode = try evm_interp.execute(tx);
+    return evm_interp.host.deployContract(allocator, bytecode.?).?;
 }
 
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     const allocator = gpa.allocator();
 
-    // const bytecode_file = @embedFile("bytecode");
-    // const bytecode = try hexToBytesOwned(allocator, bytecode_file[0..bytecode_file.len-1]);
-    // defer allocator.free(bytecode);
-    //
-    // const stripped_bytecode = stripContractMetadata(bytecode);
-    // _ = stripped_bytecode;
+    const bytecode_file = @embedFile("bytecode");
+    const bytecode = try hexToBytesOwned(allocator, bytecode_file[0..bytecode_file.len-1]);
+    defer allocator.free(bytecode);
 
     var volatile_host = evm.VolatileHost.init(allocator);
     defer volatile_host.deinit();
 
     var evm_host = volatile_host.host();
 
-    const contract_address = deployTestContract(allocator, &evm_host);
-    // const bytecode = evm_host.getContractCode(contract_address).?;
+    const contract_creation_transaction = Transaction {
+        .from = 69,
+        .to = 0,
+        .nonce = 0,
+        .value = 0,
+        .data = bytecode,
+    };
 
+    const contract_address = try deployContract(allocator, &evm_host, contract_creation_transaction);
+
+    const message_call_transaction = Transaction {
+        .from = 69,
+        .to = contract_address,
+        .nonce = 1,
+        .value = 0,
+        // 17 * 5
+        .data = try hexToBytesOwned(allocator, "eb8ac92100000000000000000000000000000000000000000000000000000000000000110000000000000000000000000000000000000000000000000000000000000005"),
+    };
     var evm_interp = try evm.Interpreter.init(allocator, &evm_host);
     defer evm_interp.deinit();
 
-    const transaction = Transaction {
-        .from = 69,
-        .to = contract_address,
-        .nonce = 0,
-        .value = 100,
-        .data = &.{1, 5},
-    };
-    const returned_bytes = try evm_interp.execute(transaction);
+    const returned_bytes = try evm_interp.execute(message_call_transaction);
     std.debug.print("final return: {any}\n", .{returned_bytes});
 
     // try volatile_host.storage.prettyPrint();

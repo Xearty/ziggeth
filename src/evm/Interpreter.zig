@@ -4,6 +4,7 @@ const Allocator = std.mem.Allocator;
 const Word = @import("types").Word;
 const Contract = @import("types").Contract;
 const Transaction = @import("types").Transaction;
+const Storage = @import("Storage.zig");
 const Stack = @import("stack.zig").Stack;
 const Host = @import("Host.zig");
 const Memory = @import("Memory.zig");
@@ -43,19 +44,11 @@ pub fn deinit(self: *Interpreter) void {
 }
 
 pub fn execute(self: *Interpreter, tx: Transaction) !?[]const u8 {
-    const account = self.host.getAccount(tx.to).?;
-    const contract = switch (account) {
-        .contract => |contract| contract,
-        .eoa => |_| unreachable,
-    };
+    const base_frame = self.frameFromTransaction(tx);
+    return try self.executeFrame(base_frame);
+}
 
-    const base_frame = Frame {
-        .executing_contract = contract,
-        .program_counter = 0,
-        .status = .Executing,
-        .call_data = tx.data,
-        .call_value = tx.value,
-    };
+fn executeFrame(self: *Interpreter, base_frame: Frame) !?[]const u8 {
     try self.frames.push(base_frame);
 
     while (self.status == .RUNNING) {
@@ -76,6 +69,42 @@ pub fn execute(self: *Interpreter, tx: Transaction) !?[]const u8 {
     }
 
     return self.return_data;
+}
+
+fn initDummyContractWithCode(allocator: Allocator, code: []const u8) Contract {
+    return .{
+        .address = 0,
+        .balance = 0,
+        .nonce = 0,
+        .code = code,
+        .storage = Storage.init(allocator),
+    };
+}
+
+fn frameFromTransaction(self: *const Interpreter, tx: Transaction) Frame {
+    return switch (tx.to) {
+        0 => .{
+            .executing_contract = initDummyContractWithCode(self.allocator, tx.data),
+            .program_counter = 0,
+            .status = .Executing,
+            .call_data = tx.data,
+            .call_value = tx.value,
+        },
+        else => blk: {
+            const account = self.host.getAccount(tx.to).?;
+            const contract = switch (account) {
+                .contract => |contract| contract,
+                .eoa => |_| unreachable,
+            };
+            break :blk .{
+                .executing_contract = contract,
+                .program_counter = 0,
+                .status = .Executing,
+                .call_data = tx.data,
+                .call_value = tx.value,
+            };
+        }
+    };
 }
 
 pub fn setReturnData(self: *Interpreter, data: []const u8) !void {
