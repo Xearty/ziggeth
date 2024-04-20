@@ -7,7 +7,7 @@ const JumpError = error {
 };
 
 pub inline fn stop(interp: *Interpreter) !void {
-    interp.status = .HALTED;
+    interp.status = .Halted;
 }
 
 pub inline fn jump(interp: *Interpreter) !void {

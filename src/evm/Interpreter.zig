@@ -30,7 +30,7 @@ pub fn init(allocator: Allocator, host: *Host) !Interpreter {
         .stack = StackType.init(allocator),
         .memory = try Memory.init(allocator),
         .host = host,
-        .status = .RUNNING,
+        .status = .Running,
         .return_data = null,
         .allocator = allocator,
     };
@@ -51,7 +51,7 @@ pub fn execute(self: *Interpreter, tx: Transaction) !?[]const u8 {
 fn executeFrame(self: *Interpreter, base_frame: Frame) !?[]const u8 {
     try self.frames.push(base_frame);
 
-    while (self.status == .RUNNING) {
+    while (self.status == .Running) {
         const frame = self.frames.top().?;
         const code = frame.executing_contract.code;
         const program_counter = frame.program_counter;
@@ -63,7 +63,7 @@ fn executeFrame(self: *Interpreter, base_frame: Frame) !?[]const u8 {
         if (frame.status == .Returned) {
             _ = self.frames.pop();
             if (self.frames.size() == 0) {
-                self.status = .HALTED;
+                self.status = .Halted;
             }
         }
     }
@@ -141,7 +141,7 @@ fn advanceProgramCounter(self: *Interpreter, leap: usize) void {
     var frame = self.frames.top().?;
     frame.program_counter += leap;
     if (frame.program_counter >= frame.executing_contract.code.len) {
-        self.status = .HALTED;
+        self.status = .Halted;
     }
 }
 
@@ -158,10 +158,9 @@ pub const FrameStatus = enum {
     Returned,
 };
 
- // TODO: impl RETURNED state and stick it in frame
 pub const VMStatus = enum {
-    RUNNING,
-    HALTED,
-    RETURNED,
+    Running,
+    Halted,
+    Returned,
 };
 

@@ -2,12 +2,12 @@ const Interpreter = @import("evm").Interpreter;
 
 pub inline fn invalid(interp: *Interpreter) !void {
     // TODO: set frame status to .Reverted
-    interp.status = .HALTED;
+    interp.status = .Halted;
     interp.clearReturnData();
 }
 
 pub inline fn revert(interp: *Interpreter) !void {
-    interp.status = .HALTED;
+    interp.status = .Halted;
 }
 
 pub inline fn @"return"(interp: *Interpreter) !void {
