@@ -5,7 +5,7 @@ const utils = @import("evm_utils");
 const Word = @import("types").Word;
 const Keccak256 = std.crypto.hash.sha3.Keccak256;
 
-pub inline fn sha3(interp: *Interpreter) !void {
+pub inline fn keccak256(interp: *Interpreter) !void {
     const offset = interp.stack.pop();
     const length = interp.stack.pop();
 
