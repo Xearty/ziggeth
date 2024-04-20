@@ -35,7 +35,7 @@ pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     const allocator = gpa.allocator();
 
-    const bytecode_file = @embedFile("bytecode");
+    const bytecode_file = @embedFile("./solidity/out/Test.bin");
     const bytecode = try utils.hexToBytesOwned(allocator, bytecode_file[0..bytecode_file.len-1]);
     defer allocator.free(bytecode);
 

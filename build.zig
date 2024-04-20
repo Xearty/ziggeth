@@ -1,9 +1,16 @@
 const std = @import("std");
+const Allocator = std.mem.Allocator;
 
 // Although this function looks imperative, note that its job is to
 // declaratively construct a build graph that will be executed by an external
 // runner.
-pub fn build(b: *std.Build) void {
+pub fn build(b: *std.Build) !void {
+    var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
+    defer arena.deinit();
+    const allocator = arena.allocator();
+
+    try compileContracts(allocator);
+
     // Standard target options allows the person running `zig build` to choose
     // what target to build for. Here we do not override the defaults, which
     // means any target is allowed, and the default is native. Other options
@@ -105,4 +112,35 @@ pub fn build(b: *std.Build) void {
     // running the unit tests.
     const test_step = b.step("test", "Run unit tests");
     test_step.dependOn(&run_lib_unit_tests.step);
+}
+
+fn compileContracts(allocator: Allocator) !void {
+    const solidity_dir = "./src/solidity/";
+    const out_dir = try std.mem.concat(allocator, u8, &.{ solidity_dir, "out" });
+
+    var cwd = try std.fs.cwd().openDir(solidity_dir, .{ .iterate = true });
+    defer cwd.close();
+
+    var cwd_iter = cwd.iterate();
+    while (try cwd_iter.next()) |entry| {
+        if (entry.kind == .file) {
+            const path = try std.mem.concat(allocator, u8, &.{ solidity_dir, entry.name });
+            const result = try std.ChildProcess.run(.{
+                .allocator = allocator,
+                .argv = &[_][]const u8{ "solc", path, "--bin", "-o", out_dir, "--overwrite" },
+            });
+
+            switch (result.term) {
+                .Exited => |exit_code| {
+                    if (exit_code == 0) {
+                        std.log.info("Compiled {s} successfully\n", .{path});
+                    } else {
+                        std.log.err("{s}\n", .{result.stdout});
+                        std.process.exit(1);
+                    }
+                },
+                else => unreachable,
+            }
+        }
+    }
 }
