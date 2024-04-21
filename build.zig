@@ -33,39 +33,34 @@ pub fn build(b: *std.Build) !void {
         .root_source_file = .{ .path = "src/math/root.zig" },
     });
 
-    const evm_module = b.createModule(.{
-        .root_source_file = .{ .path = "src/evm/root.zig" },
+    const common_dst_module = b.createModule(.{
+        .root_source_file = .{ .path = "src/common_dst/root.zig" },
     });
 
-    const types_module = b.createModule(.{
-        .root_source_file = .{ .path = "src/evm/types/root.zig" },
+    const eth_types_module = b.createModule(.{
+        .root_source_file = .{ .path = "src/eth_types/root.zig" },
     });
 
-    const instructions_module = b.createModule(.{
-        .root_source_file = .{ .path = "src/evm/instructions/root.zig" },
+    const execution_engine_module = b.createModule(.{
+        .root_source_file = .{ .path = "src/execution_engine/root.zig" },
     });
 
     const utils_module = b.createModule(.{
-        .root_source_file = .{ .path = "src/evm/utils/root.zig" },
+        .root_source_file = .{ .path = "src/utils/root.zig" },
     });
 
-    evm_module.addImport("math", math_module);
-    evm_module.addImport("evm_instructions", instructions_module);
-    evm_module.addImport("evm_utils", utils_module);
+    exe.root_module.addImport("utils", utils_module);
+    exe.root_module.addImport("eth_types", eth_types_module);
+    exe.root_module.addImport("execution_engine", execution_engine_module);
 
-    exe.root_module.addImport("math", math_module);
-    exe.root_module.addImport("evm", evm_module);
-    exe.root_module.addImport("types", types_module);
-    exe.root_module.addImport("evm_utils", utils_module);
+    execution_engine_module.addImport("utils", utils_module);
+    execution_engine_module.addImport("eth_types", eth_types_module);
+    execution_engine_module.addImport("math", math_module);
+    execution_engine_module.addImport("common_dst", common_dst_module);
 
-    evm_module.addImport("types", types_module);
+    utils_module.addImport("eth_types", eth_types_module); // TODO: get rid of this dependency
 
-    instructions_module.addImport("evm", evm_module);
-    instructions_module.addImport("evm_utils", utils_module);
-    instructions_module.addImport("types", types_module);
-    instructions_module.addImport("math", math_module);
-
-    utils_module.addImport("types", types_module);
+    common_dst_module.addImport("utils", utils_module);
 
     // This declares intent for the executable to be installed into the
     // standard location when the user invokes the "install" step (the default
@@ -102,8 +97,8 @@ pub fn build(b: *std.Build) !void {
         .target = target,
         .optimize = optimize,
     });
-    evm_tests.root_module.addImport("evm", evm_module);
-    evm_tests.root_module.addImport("types", types_module);
+    // evm_tests.root_module.addImport("evm", evm_module);
+    // evm_tests.root_module.addImport("types", types_module);
 
     const run_lib_unit_tests = b.addRunArtifact(evm_tests);
 
@@ -115,7 +110,7 @@ pub fn build(b: *std.Build) !void {
 }
 
 fn compileContracts(allocator: Allocator) !void {
-    const solidity_dir = "./src/solidity/";
+    const solidity_dir = "./src/execution_engine/solidity/";
     const out_dir = try std.mem.concat(allocator, u8, &.{ solidity_dir, "out" });
 
     var cwd = try std.fs.cwd().openDir(solidity_dir, .{ .iterate = true });

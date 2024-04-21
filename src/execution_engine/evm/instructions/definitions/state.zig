@@ -1,6 +1,5 @@
-const evm = @import("evm");
-const Interpreter = evm.Interpreter;
-const Opcode = evm.Opcode;
+const Interpreter = @import("../../Interpreter.zig");
+const Opcode = @import("../opcodes.zig").Opcode;
 
 const JumpError = error {
     InvalidJumpLocation,

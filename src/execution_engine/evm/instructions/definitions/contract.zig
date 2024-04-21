@@ -1,8 +1,8 @@
 const std = @import("std");
 const Keccak256 = std.crypto.hash.sha3.Keccak256;
-const Interpreter = @import("evm").Interpreter;
-const utils = @import("evm_utils");
-const Word = @import("types").Word;
+const Interpreter = @import("../../Interpreter.zig");
+const utils = @import("utils");
+const Word = @import("eth_types").Word;
 
 pub inline fn codesize(interp: *Interpreter) !void {
     const code = interp.frames.top().?.executing_contract.code;

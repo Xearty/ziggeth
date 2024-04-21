@@ -1,5 +1,6 @@
 const std = @import("std");
-const Storage = @import("../Storage.zig");
+
+pub const Storage = @import("./eth_dst/Storage.zig");
 
 pub const Word = u256;
 pub const SignedWord = i256;

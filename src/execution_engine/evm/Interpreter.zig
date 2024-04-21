@@ -1,17 +1,20 @@
 const std = @import("std");
 const ArrayList = std.ArrayList;
 const Allocator = std.mem.Allocator;
-const Word = @import("types").Word;
-const Contract = @import("types").Contract;
-const Transaction = @import("types").Transaction;
-const Storage = @import("Storage.zig");
-const Stack = @import("stack.zig").Stack;
+
+const eth_types = @import("eth_types");
+const Storage = eth_types.Storage;
+const Word = eth_types.Word;
+const Contract = eth_types.Contract;
+const Transaction = eth_types.Transaction;
+
+const Stack = @import("common_dst").Stack;
 const Host = @import("Host.zig");
 const Memory = @import("Memory.zig");
-const instructions = @import("evm_instructions");
+const instructions = @import("./instructions/instructions.zig");
 const opcodes = instructions.opcodes;
 const Opcode = opcodes.Opcode;
-const utils = @import("evm_utils");
+const utils = @import("utils");
 
 const Interpreter = @This();
 const StackType = Stack(Word);

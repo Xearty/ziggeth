@@ -1,8 +1,7 @@
-const evm = @import("evm");
-const Interpreter = evm.Interpreter;
-const types = @import("types");
-const Word = types.Word;
-const SignedWord = types.SignedWord;
+const Interpreter = @import("../../Interpreter.zig");
+const eth_types = @import("eth_types");
+const Word = eth_types.Word;
+const SignedWord = eth_types.SignedWord;
 const math = @import("math");
 
 pub inline fn add(interp: *Interpreter) !void {

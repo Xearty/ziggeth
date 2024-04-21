@@ -1,13 +1,15 @@
 const std = @import("std");
 const Allocator = std.mem.Allocator;
-const assert = std.debug.assert;
 const ArrayList = std.ArrayList;
-const evm = @import("evm");
-const utils = @import("evm_utils");
-const rlp = evm.rlp;
-const types = @import("types");
-const Address = types.Address;
-const Transaction = types.Transaction;
+
+const execution_engine = @import("execution_engine");
+const evm = execution_engine.evm;
+const system = execution_engine.system;
+
+const utils = @import("utils");
+const eth_types = @import("eth_types");
+const Address = eth_types.Address;
+const Transaction = eth_types.Transaction;
 const BinaryBufferBuilder = utils.BinaryBufferBuilder;
 
 fn deployTestContract(allocator: Allocator, host: *evm.Host) Address {
@@ -21,22 +23,12 @@ fn deployTestContract(allocator: Allocator, host: *evm.Host) Address {
     return host.deployContract(allocator, bytecode).?;
 }
 
-fn deployContract(allocator: Allocator, host: *evm.Host, tx: Transaction) !Address {
-    std.debug.assert(tx.to == 0);
-
-    var evm_interp = try evm.Interpreter.init(allocator, host);
-    defer evm_interp.deinit();
-
-    const bytecode = try evm_interp.execute(tx);
-    return evm_interp.host.deployContract(allocator, bytecode.?).?;
-}
-
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     const allocator = gpa.allocator();
 
-    const bytecode_file = @embedFile("./solidity/out/Test.bin");
-    const bytecode = try utils.hexToBytesOwned(allocator, bytecode_file[0..bytecode_file.len-1]);
+    const bytecode_file = @embedFile("./execution_engine/solidity/out/Test.bin");
+    const bytecode = try utils.hexToBytesOwned(allocator, bytecode_file);
     defer allocator.free(bytecode);
 
     var volatile_host = evm.VolatileHost.init(allocator);
@@ -52,7 +44,7 @@ pub fn main() !void {
         .data = bytecode,
     };
 
-    const contract_address = try deployContract(allocator, &evm_host, contract_creation_transaction);
+    const contract_address = try system.deployContract(allocator,&evm_host, contract_creation_transaction);
 
     const signature = "test(uint256,uint256)";
     const selector = utils.computeFunctionSelector(signature);
@@ -99,3 +91,4 @@ pub fn main() !void {
 // TODO: meta program to serialize and deserialize a zig struct that tries to guess the size and sets
 // the inital capacity of the ArrayList buffer
 // TODO: use fixed buffers for rlp encoding
+// TODO: generate zig structs for test contracts from ABI

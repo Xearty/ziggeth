@@ -1,8 +1,7 @@
 const std = @import("std");
-const evm = @import("evm");
-const Interpreter = evm.Interpreter;
-const utils = @import("evm_utils");
-const Word = @import("types").Word;
+const Interpreter = @import("../../Interpreter.zig");
+const utils = @import("utils");
+const Word = @import("eth_types").Word;
 const Keccak256 = std.crypto.hash.sha3.Keccak256;
 
 pub inline fn keccak256(interp: *Interpreter) !void {

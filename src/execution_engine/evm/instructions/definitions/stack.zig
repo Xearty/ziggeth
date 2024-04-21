@@ -1,8 +1,7 @@
 const std = @import("std");
-const evm = @import("evm");
-const Interpreter = evm.Interpreter;
-const utils = @import("evm_utils");
-const Word = @import("types").Word;
+const Interpreter = @import("../../Interpreter.zig");
+const utils = @import("utils");
+const Word = @import("eth_types").Word;
 
 pub inline fn pop(interp: *Interpreter) !void {
     _ = interp.stack.pop();

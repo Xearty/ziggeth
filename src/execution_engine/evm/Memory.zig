@@ -1,8 +1,8 @@
 const std = @import("std");
 const ArrayList = std.ArrayList;
 const Allocator = std.mem.Allocator;
-const Word = @import("types").Word;
-const utils = @import("evm_utils");
+const Word = @import("eth_types").Word;
+const utils = @import("utils");
 
 const Self = @This();
 const InnerType = ArrayList(u8);

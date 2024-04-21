@@ -1,10 +1,10 @@
 const std = @import("std");
 const Allocator = std.mem.Allocator;
-const types = @import("types");
-const Word = types.Word;
-const Address = types.Address;
-const Account = types.Account;
-const Storage = @import("Storage.zig");
+const eth_types = @import("eth_types");
+const Word = eth_types.Word;
+const Address = eth_types.Address;
+const Account = eth_types.Account;
+const Storage = eth_types.Storage;
 
 const Self = @This();
 

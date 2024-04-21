@@ -2,7 +2,7 @@ const std = @import("std");
 const ArrayList = std.ArrayList;
 const Allocator = std.mem.Allocator;
 const evm = @import("root").Interpreter;
-const instructions = @import("evm_instructions");
+const instructions = @import("./instructions/instructions.zig");
 const opcodes = instructions.opcodes;
 const utils = @import("evm_utils");
 

@@ -1,9 +1,8 @@
-const evm = @import("evm");
-const Interpreter = evm.Interpreter;
-const types = @import("types");
-const Word = types.Word;
-const SignedWord = types.SignedWord;
-const utils = @import("evm_utils");
+const Interpreter = @import("../../Interpreter.zig");
+const eth_types = @import("eth_types");
+const Word = eth_types.Word;
+const SignedWord = eth_types.SignedWord;
+const utils = @import("utils");
 
 pub inline fn signextend(interp: *Interpreter) !void {
     const operand1 = interp.stack.pop();

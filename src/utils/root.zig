@@ -2,7 +2,7 @@ const std = @import("std");
 const Allocator = std.mem.Allocator;
 const Keccak256 = std.crypto.hash.sha3.Keccak256;
 const print = std.debug.print;
-const Word = @import("types").Word;
+const Word = @import("eth_types").Word;
 
 pub const BinaryBufferBuilder = @import("BinaryBufferBuilder.zig");
 

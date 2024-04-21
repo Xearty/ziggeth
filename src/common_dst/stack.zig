@@ -1,7 +1,7 @@
 const std = @import("std");
 const ArrayList = std.ArrayList;
 const Allocator = std.mem.Allocator;
-const printBoxed = @import("evm_utils").printBoxed;
+const printBoxed = @import("utils").printBoxed;
 
 pub fn Stack(comptime T: type) type {
     return struct {

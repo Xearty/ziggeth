@@ -2,8 +2,7 @@ const std = @import("std");
 const AutoHashMap = std.AutoHashMap;
 const Allocator = std.mem.Allocator;
 const printBoxed = @import("evm_utils").printBoxed;
-const types = @import("types");
-const Word = types.Word;
+const Word = @import("../root.zig").Word;
 
 const Self = @This();
 const InnerType = AutoHashMap(Word, Word);

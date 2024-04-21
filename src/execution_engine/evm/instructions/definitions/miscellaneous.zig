@@ -1,4 +1,4 @@
-const Interpreter = @import("evm").Interpreter;
+const Interpreter = @import("../../Interpreter.zig");
 
 pub inline fn invalid(interp: *Interpreter) !void {
     // TODO: set frame status to .Reverted

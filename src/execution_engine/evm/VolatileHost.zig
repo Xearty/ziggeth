@@ -1,14 +1,14 @@
 const std = @import("std");
 const Allocator = std.mem.Allocator;
 const Host = @import("Host.zig");
-const utils = @import("evm_utils");
-const types = @import("types");
-const Word = types.Word;
-const Address = types.Address;
-const WorldState = types.WorldState;
-const Account = types.Account;
-const Contract = types.Contract;
-const Storage = @import("Storage.zig");
+const utils = @import("utils");
+const eth_types = @import("eth_types");
+const Word = eth_types.Word;
+const Address = eth_types.Address;
+const WorldState = eth_types.WorldState;
+const Account = eth_types.Account;
+const Contract = eth_types.Contract;
+const Storage = eth_types.Storage;
 
 const Self = @This();
 
