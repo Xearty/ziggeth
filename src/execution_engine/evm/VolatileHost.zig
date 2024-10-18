@@ -73,7 +73,7 @@ fn getAccount(ctx: *anyopaque, address: Address) ?Account {
 fn deployContract(ctx: *anyopaque, allocator: Allocator, code: []const u8) ?Address {
     const self: *Self = @ptrCast(@alignCast(ctx));
     var random_bytes: [@sizeOf(Address)]u8 = undefined;
-    std.os.getrandom(&random_bytes) catch unreachable;
+    std.Random.bytes(std.crypto.random, &random_bytes);
     const address = utils.intFromBigEndianBytes(Address, &random_bytes);
 
     const contract = Account {

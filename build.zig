@@ -24,29 +24,29 @@ pub fn build(b: *std.Build) !void {
 
     const exe = b.addExecutable(.{
         .name = "evm",
-        .root_source_file = .{ .path = "src/main.zig" },
+        .root_source_file = b.path("src/main.zig"),
         .target = target,
         .optimize = optimize,
     });
 
     const math_module = b.createModule(.{
-        .root_source_file = .{ .path = "src/math/root.zig" },
+        .root_source_file = b.path("src/math/root.zig"),
     });
 
     const common_dst_module = b.createModule(.{
-        .root_source_file = .{ .path = "src/common_dst/root.zig" },
+        .root_source_file = b.path("src/common_dst/root.zig"),
     });
 
     const eth_types_module = b.createModule(.{
-        .root_source_file = .{ .path = "src/eth_types/root.zig" },
+        .root_source_file = b.path("src/eth_types/root.zig"),
     });
 
     const execution_engine_module = b.createModule(.{
-        .root_source_file = .{ .path = "src/execution_engine/root.zig" },
+        .root_source_file = b.path("src/execution_engine/root.zig"),
     });
 
     const utils_module = b.createModule(.{
-        .root_source_file = .{ .path = "src/utils/root.zig" },
+        .root_source_file = b.path("src/utils/root.zig"),
     });
 
     exe.root_module.addImport("utils", utils_module);
@@ -93,7 +93,7 @@ pub fn build(b: *std.Build) !void {
     // Creates a step for unit testing. This only builds the test executable
     // but does not run it.
     const evm_tests = b.addTest(.{
-        .root_source_file = .{ .path = "src/tests/evm_tests.zig" },
+        .root_source_file = b.path("src/tests/evm_tests.zig"),
         .target = target,
         .optimize = optimize,
     });
@@ -120,7 +120,8 @@ fn compileContracts(allocator: Allocator) !void {
     while (try cwd_iter.next()) |entry| {
         if (entry.kind == .file) {
             const path = try std.mem.concat(allocator, u8, &.{ solidity_dir, entry.name });
-            const result = try std.ChildProcess.run(.{
+            std.debug.print("path: {s}\n", .{path});
+            const result = try std.process.Child.run(.{
                 .allocator = allocator,
                 .argv = &[_][]const u8{ "solc", path, "--bin", "-o", out_dir, "--overwrite" },
             });
